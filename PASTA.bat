@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title PASTA V2 — Voice-to-Computer Control & Dictation
+title PASTA V2 — Voice-to-Computer Control ^& Dictation
 cd /d "%~dp0"
 
 echo ======================================================================

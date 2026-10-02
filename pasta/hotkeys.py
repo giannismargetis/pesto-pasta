@@ -37,6 +37,7 @@ def _matching_names(hotkey: str) -> set[str]:
     return {target}
 
 
+class HotkeyListener(threading.Thread):
     def __init__(
         self,
         cfg: Config,
