@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pasta-v2"
+version = "2.0.0"
+description = "PASTA V2 — Fast local bilingual push-to-talk voice typer & real-time computer control for Windows"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["speech-to-text", "voice-control", "computer-use", "decider-2b", "whisper", "parakeet", "automation", "pasta", "pesto"]
+dependencies = [
+    "numpy>=1.24",
+    "sounddevice>=0.4.6",
+    "keyboard>=0.13.5",
+    "pyperclip>=1.8.2",
+    "pystray>=0.19.4",
+    "Pillow>=10.0.0",
+    "colorama>=0.4.6",
+    "faster-whisper>=1.2.0",
+    "onnx-asr[cpu,hub]>=0.7.0",
+    "psutil>=5.9.0",
+    "pywin32>=306",
+    "pywinauto>=0.6.8",
+    "uiautomation>=2.0.18",
+    "playwright>=1.40.0",
+    "decider-ai>=1.8.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+gpu = [
+    "onnxruntime-gpu>=1.18",
+]
+
+[project.scripts]
+pasta = "pasta.cli:main"
+pesto = "pasta.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["pasta*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]

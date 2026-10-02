@@ -1,0 +1,16 @@
+numpy>=1.24
+sounddevice>=0.4.6
+keyboard>=0.13.5
+pyperclip>=1.8.2
+pystray>=0.19.4
+Pillow>=10.0.0
+colorama>=0.4.6
+faster-whisper>=1.2.0
+onnx-asr[cpu,hub]>=0.7.0
+psutil>=5.9.0
+pywin32>=306
+pywinauto>=0.6.8
+uiautomation>=2.0.18
+playwright>=1.40.0
+decider-ai>=1.8.0
+pytest>=8.0.0
