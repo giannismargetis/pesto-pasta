@@ -101,6 +101,25 @@ class TrayController(threading.Thread):
             pipeline.stop()
             icon.stop()
 
+        def mode_item(mode_name, label):
+            def _set(icon, item):
+                pipeline._operation_mode = mode_name
+                pipeline.overlay.set_operation_mode(mode_name)
+                pipeline.overlay.show_toast(f"Mode: {mode_name.upper()}", "Switched via System Tray", duration=1.6)
+
+            return pystray.MenuItem(
+                label,
+                _set,
+                radio=True,
+                checked=lambda item: pipeline.operation_mode == mode_name,
+            )
+
+        mode_menu = pystray.Menu(
+            mode_item("agent", "🔵 Computer Use Mode (Direct Actions)"),
+            mode_item("dictation", "🟢 Voice Typing Mode (Direct Text)"),
+            mode_item("auto", "🟣 Smart Hybrid Mode (Wake Prefixes)"),
+        )
+
         models_menu = pystray.Menu(
             model_item("large-v3-turbo"),
             model_item("large-v3"),
@@ -112,8 +131,10 @@ class TrayController(threading.Thread):
         menu = pystray.Menu(
             pystray.MenuItem("⚙️ Settings & Dashboard", on_open_dashboard, default=True),
             pystray.Menu.SEPARATOR,
+            pystray.MenuItem("🎯 Operation Mode (F10)", mode_menu),
+            pystray.Menu.SEPARATOR,
             pystray.MenuItem(
-                lambda item: f"Active: {pipeline.active_engine.upper()}",
+                lambda item: f"Active Engine: {pipeline.active_engine.upper()}",
                 lambda icon, item: None,
                 enabled=False,
             ),
@@ -142,11 +163,11 @@ class TrayController(threading.Thread):
             ),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem(pause_label, toggle_pause),
-            pystray.MenuItem("❌ Exit PESTO", on_exit),
+            pystray.MenuItem("❌ Exit PASTA", on_exit),
         )
 
         try:
-            self.icon = pystray.Icon("pesto", _find_icon(), "PESTO", menu)
+            self.icon = pystray.Icon("pasta", _find_icon(), "PASTA V2", menu)
             self.icon.run()
         except Exception as exc:
             log.error("Tray failed to start: %s", exc)

@@ -37,7 +37,7 @@ class DashboardApp:
         self.pipeline = pipeline
 
         self.root = tk.Tk()
-        self.root.title("PESTO — Settings & Dashboard")
+        self.root.title("PASTA V2 — Settings & Dashboard")
         self.root.configure(bg=COLOR_BG)
         self.root.geometry("740x720")
         self.root.minsize(680, 600)

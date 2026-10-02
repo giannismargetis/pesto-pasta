@@ -12,6 +12,7 @@ from .agent.router import CommandRouter, RouteType
 from .audio import AudioCapture
 from .config import Config
 from .engines import create_engine, guess_language
+from .gpu import get_gpu_memory_info
 from .history_db import get_history_db
 from .hotkeys import HotkeyListener
 from .injection import get_foreground_window, paste_text
@@ -40,6 +41,7 @@ class Pipeline:
         self._state_lock = threading.Lock()
         self._active_engine_name = cfg.engine
         self._language_mode = cfg.language if cfg.language in ("auto", "el", "en") else "auto"
+        self._operation_mode = getattr(cfg, "mode", "auto").lower()
         self._paused = False
         self._last_activity = time.monotonic()
 
@@ -52,6 +54,8 @@ class Pipeline:
         # Overlay HUD
         self.overlay = Overlay(cfg)
         self.overlay.set_engine_and_language(self._active_engine_name, self._language_mode)
+        self.overlay.set_operation_mode(self._operation_mode)
+        self.overlay.set_mode_toggle_callback(self.cycle_operation_mode)
 
         # Agent & Router subsystem
         self.router = CommandRouter()
@@ -78,6 +82,7 @@ class Pipeline:
             on_toggle_language=self.cycle_language,
             on_toggle_engine=self.cycle_engine,
             on_cancel=self.on_cancel_agent,
+            on_toggle_mode=self.cycle_operation_mode,
         )
 
         self._target_hwnd = 0
@@ -115,7 +120,30 @@ class Pipeline:
         self.agent_loop.cancel()
         self._beep(400, 120)
 
+    @property
+    def operation_mode(self) -> str:
+        with self._state_lock:
+            return self._operation_mode
+
+    def cycle_operation_mode(self) -> None:
+        order = {"auto": "agent", "agent": "dictation", "dictation": "auto"}
+        with self._state_lock:
+            new_mode = order.get(self._operation_mode, "auto")
+            self._operation_mode = new_mode
+
+        self.overlay.set_operation_mode(new_mode)
+        toast_map = {
+            "agent": ("🔵 Computer Use Mode", "Voice commands control computer directly (No 'Pasta' prefix needed)"),
+            "dictation": ("🟢 Voice Typing Mode", "All speech typed directly into active window"),
+            "auto": ("🟣 Smart Hybrid Mode", "Dictation + 'Pasta' / 'Jarvis' wake prefixes"),
+        }
+        title, desc = toast_map.get(new_mode, ("Mode Switched", new_mode.upper()))
+        log.info("Operation mode switched to: %s", new_mode.upper())
+        self.overlay.show_toast(title, desc, duration=1.8)
+        self._beep(850 if new_mode == "agent" else (600 if new_mode == "dictation" else 720), 80)
+
     def _set_active_engine(self, name: str, force_reload: bool = False) -> None:
+        started = time.perf_counter()
         with self._state_lock:
             self._active_engine_name = name
             if force_reload and name in self.engines:
@@ -124,8 +152,17 @@ class Pipeline:
                 self.engines[name] = create_engine(name, self.cfg)
         log.info("Engine set to '%s'", name)
         self.overlay.set_engine_and_language(name, self.language_mode)
-        self.overlay.show_toast("⚡ Engine Switched", f"Active: {name.upper()}", duration=1.6)
-        threading.Thread(target=self._ensure_loaded, name="preload", daemon=True).start()
+
+        def _do_load_and_report():
+            self._ensure_loaded()
+            elapsed = time.perf_counter() - started
+            gpu = get_gpu_memory_info()
+            toast_text = f"VRAM: {gpu['percent_used']}% ({gpu['used_gb']}/{gpu['total_gb']} GB) in {elapsed:.1f}s"
+            log.info("Engine %s loaded in %.2fs | GPU VRAM: %.1f%% (%.2f/%.2f GB)", name.upper(), elapsed, gpu["percent_used"], gpu["used_gb"], gpu["total_gb"])
+            self.overlay.update_telemetry(gpu["percent_used"], gpu["used_gb"], gpu["total_gb"], elapsed * 1000.0, 0.0)
+            self.overlay.show_toast(f"⚡ {name.upper()} Ready", toast_text, duration=2.0)
+
+        threading.Thread(target=_do_load_and_report, name="preload", daemon=True).start()
 
     def _set_language_mode(self, mode: str) -> None:
         with self._state_lock:
@@ -266,7 +303,11 @@ class Pipeline:
             return
 
         # COMMAND ROUTING: Check if this is an Agent command or standard text dictation
-        route_decision = self.router.route(text)
+        route_decision = self.router.route(text, forced_mode=self._operation_mode)
+        gpu = get_gpu_memory_info()
+        rtf = latency_ms / (duration_s * 1000.0)
+        self.overlay.update_telemetry(gpu["percent_used"], gpu["used_gb"], gpu["total_gb"], latency_ms, rtf)
+        log.info("Inference: %.0fms (rtf=%.2f) | GPU VRAM: %.1f%% (%.2f/%.2f GB) | Mode: %s", latency_ms, rtf, gpu["percent_used"], gpu["used_gb"], gpu["total_gb"], self._operation_mode.upper())
         log.info("Router decision: %s (confidence=%.2f, reason='%s')", route_decision.route.value, route_decision.confidence, route_decision.reason)
 
         if route_decision.route == RouteType.AGENT and getattr(self.cfg.agent, "enabled", True):

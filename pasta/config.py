@@ -43,6 +43,10 @@ class AgentConfig:
     max_same_state_repeats: int = 3
     allow_shell_commands: bool = True
     headless_browser: bool = False
+    wake_names: list[str] = field(default_factory=lambda: [
+        "pasta", "jarvis", "computer", "system",
+        "πάστα", "παστά", "τζάρβις", "τζαρβις", "κομπιούτερ", "κομπιούτα", "υπολογιστή"
+    ])
 
 
 @dataclass
@@ -60,9 +64,11 @@ class PermissionConfig:
 class Config:
     engine: str = "whisper"
     language: str = "auto"
+    mode: str = "auto"  # "auto", "agent", "dictation"
     hotkey: str = "right ctrl"
     toggle_lang_key: str = "f12"
     toggle_engine_key: str = "f11"
+    toggle_mode_key: str = "f10"
     cancel_key: str = "esc"
     beep_enabled: bool = True
     overlay_enabled: bool = True

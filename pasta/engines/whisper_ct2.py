@@ -4,6 +4,7 @@ import time
 import numpy as np
 
 from ..config import CACHE_DIR, Config
+from ..gpu import get_gpu_memory_info
 from ..logging_setup import get_logger
 from .base import Engine, TranscriptionResult
 
@@ -71,12 +72,16 @@ class WhisperCT2Engine(Engine):
             self.compute_type = self.cfg.whisper_compute_cpu
         self._warmup()
         self._loaded = True
+        gpu = get_gpu_memory_info()
         log.info(
-            "Whisper '%s' ready on %s (%s) in %.1fs",
+            "Whisper '%s' ready on %s (%s) in %.1fs | GPU VRAM: %.1f%% (%.2f/%.2f GB)",
             self.model_name,
             self.device.upper(),
             self.compute_type,
             time.perf_counter() - started,
+            gpu["percent_used"],
+            gpu["used_gb"],
+            gpu["total_gb"],
         )
 
     def _warmup(self) -> None:

@@ -24,16 +24,26 @@ class CommandRouter:
         "pasta",
         "hey pasta",
         "ok pasta",
+        "jarvis",
+        "hey jarvis",
+        "ok jarvis",
         "computer",
         "system",
     ]
 
     PREFIXES_EL = [
         "πάστα",
+        "παστά",
         "παστα",
         "ρε πάστα",
+        "τζάρβις",
+        "τζαρβις",
+        "ρε τζάρβις",
+        "βάστα",
+        "μπάστα",
         "υπολογιστή",
         "κομπιούτερ",
+        "κομπιούτα",
         "σύστημα",
     ]
 
@@ -67,17 +77,12 @@ class CommandRouter:
     ]
 
     IMPERATIVE_EL = [
-        r"^άνοιξε\s+",
-        r"^ανοιξε\s+",
-        r"^τρέξε\s+",
-        r"^τρεξε\s+",
-        r"^πήγαινε\s+",
-        r"^πηγαινε\s+",
-        r"^ψάξε\s+",
-        r"^ψαξε\s+",
-        r"^βρες\s+",
-        r"^κλείσε\s+",
-        r"^κλεισε\s+",
+        r"^(?:θέλω\s+να\s+)?(?:άνοιξε|ανοιξε|ανοίξω|ανοιξω)\s+",
+        r"^(?:θέλω\s+να\s+)?(?:τρέξε|τρεξε)\s+",
+        r"^(?:θέλω\s+να\s+)?(?:πήγαινε|πηγαινε)\s+",
+        r"^(?:θέλω\s+να\s+)?(?:ψάξε|ψαξε|ψάξω|ψαξω)\s+",
+        r"^(?:θέλω\s+να\s+)?(?:βρες|βρω)\s+",
+        r"^(?:θέλω\s+να\s+)?(?:κλείσε|κλεισε|κλείσω|κλεισω)\s+",
         r"^ελαχιστοποίησε\s+",
         r"^μεγιστοποίησε\s+",
         r"^γύρνα\s+πίσω",
@@ -100,14 +105,29 @@ class CommandRouter:
     def __init__(self) -> None:
         self.all_prefixes = sorted(self.PREFIXES_EN + self.PREFIXES_EL, key=len, reverse=True)
 
-    def route(self, transcript: str) -> RouteDecision:
+    def route(self, transcript: str, forced_mode: str = "auto") -> RouteDecision:
         text = transcript.strip()
         if not text:
             return RouteDecision(RouteType.TEXT, "", 1.0, "empty input")
 
+        # Explicit mode overrides
+        mode = (forced_mode or "auto").lower()
+        if mode == "dictation":
+            return RouteDecision(RouteType.TEXT, text, 1.0, "mode: dictation (forced text)")
+
         clean_lower = text.lower()
 
-        # Check explicit trigger prefix
+        # If in AGENT mode, strip any optional prefix if present, but ALWAYS execute as AGENT
+        if mode == "agent":
+            for prefix in self.all_prefixes:
+                pattern = rf"^{re.escape(prefix)}[\s,:\-\.]+\s*(.*)$"
+                match = re.match(pattern, clean_lower, flags=re.IGNORECASE)
+                if match:
+                    cmd = text[match.start(1) :].strip().rstrip(".!?,;")
+                    return RouteDecision(RouteType.AGENT, cmd or text, 1.0, f"mode: agent (stripped '{prefix}')")
+            return RouteDecision(RouteType.AGENT, text.rstrip(".!?,;"), 1.0, "mode: agent (direct command)")
+
+        # AUTO MODE: Check explicit trigger prefix
         for prefix in self.all_prefixes:
             # Pattern matching: prefix followed by optional punctuation then rest
             pattern = rf"^{re.escape(prefix)}[\s,:\-\.]+\s*(.*)$"
@@ -135,8 +155,8 @@ class CommandRouter:
             return RouteDecision(
                 RouteType.AGENT,
                 "stop",
-                confidence=0.95,
-                reason="explicit stop command",
+                confidence=1.0,
+                reason="matched direct stop command",
             )
 
         # Check imperative command without prefix

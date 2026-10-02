@@ -43,6 +43,7 @@ def cmd_run(cfg: Config) -> int:
 
     log.info("=" * 60)
     log.info("🍝 PASTA V2 — Local Voice-to-Computer Control & Dictation")
+    log.info("Mode: %s (Press [%s] or Click HUD to cycle)", cfg.mode.upper(), cfg.toggle_mode_key.upper())
     log.info("ASR Engine: %s | Language: %s", pipeline.active_engine.upper(), pipeline.language_mode.upper())
     log.info("Decision Model: %s (%s)", cfg.agent.model, cfg.agent.model_runtime)
     log.info("Hold [%s] to dictate or issue computer commands", cfg.hotkey.upper())
@@ -148,7 +149,10 @@ def main(argv: list[str] | None = None) -> int:
         description="PASTA V2 — Fast local push-to-talk speech-to-text & real-time computer control for Windows",
     )
     sub = parser.add_subparsers(dest="command")
-    sub.add_parser("run", help="start push-to-talk & computer control (default)")
+    run_p = sub.add_parser("run", help="start push-to-talk & computer control (default)")
+    run_p.add_argument("--mode", choices=["auto", "agent", "dictation"], help="operation mode (auto, agent, dictation)")
+    run_p.add_argument("--engine", choices=[*ENGINES], help="ASR engine (whisper, parakeet)")
+    run_p.add_argument("--language", choices=["auto", "el", "en"], help="dictation language")
 
     ag = sub.add_parser("agent", help="directly execute an agent automation command")
     ag.add_argument("goal", help="task goal (e.g. 'open Chrome and search RTX 5090')")
@@ -166,6 +170,14 @@ def main(argv: list[str] | None = None) -> int:
 
     setup_logging()
     cfg = load_config()
+
+    if getattr(args, "mode", None):
+        cfg.mode = args.mode
+    if getattr(args, "engine", None) and args.command == "run":
+        cfg.engine = args.engine
+    if getattr(args, "language", None) and args.command == "run":
+        cfg.language = args.language
+
     command = args.command or "run"
 
     if command == "run":

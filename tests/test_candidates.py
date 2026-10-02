@@ -60,3 +60,20 @@ def test_candidates_mute(builder):
     c_ids = [c.id for c in candidates]
 
     assert "toggle_mute" in c_ids
+
+
+def test_candidates_close_notepad_does_not_launch(builder):
+    state = ComputerState(timestamp=0)
+    candidates = builder.build_candidates(state, "κλείσε το notepad που άνοιξες")
+    c_ids = [c.id for c in candidates]
+
+    assert "close_notepad" in c_ids
+    assert "launch_notepad" not in c_ids
+
+
+def test_candidates_youtube(builder):
+    state = ComputerState(timestamp=0)
+    candidates = builder.build_candidates(state, "άνοιξε το YouTube και ψάξε KSI videos")
+    c_ids = [c.id for c in candidates]
+
+    assert "search_youtube" in c_ids or "open_youtube" in c_ids

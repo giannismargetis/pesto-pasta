@@ -4,6 +4,7 @@ import time
 import numpy as np
 
 from ..config import Config
+from ..gpu import get_gpu_memory_info
 from ..logging_setup import get_logger
 from .base import Engine, TranscriptionResult, guess_language, split_long_audio
 
@@ -58,12 +59,16 @@ class ParakeetOnnxEngine(Engine):
         with self._lock:
             self._model = onnx_asr.load_model(self.model_name, **load_kwargs)
         self._loaded = True
+        gpu = get_gpu_memory_info()
         log.info(
-            "Parakeet '%s' (int8=%s) ready on %s in %.1fs",
+            "Parakeet '%s' (int8=%s) ready on %s in %.1fs | GPU VRAM: %.1f%% (%.2f/%.2f GB)",
             self.model_name,
             self.quantization,
             self.device_label,
             time.perf_counter() - started,
+            gpu["percent_used"],
+            gpu["used_gb"],
+            gpu["total_gb"],
         )
 
     def unload(self) -> None:

@@ -37,7 +37,6 @@ def _matching_names(hotkey: str) -> set[str]:
     return {target}
 
 
-class HotkeyListener(threading.Thread):
     def __init__(
         self,
         cfg: Config,
@@ -46,10 +45,11 @@ class HotkeyListener(threading.Thread):
         on_toggle_language,
         on_toggle_engine,
         on_cancel=None,
+        on_toggle_mode=None,
     ) -> None:
         super().__init__(name="Hotkeys", daemon=True)
         self.cfg = cfg
-        self.callbacks = (on_ptt_down, on_ptt_up, on_toggle_language, on_toggle_engine, on_cancel)
+        self.callbacks = (on_ptt_down, on_ptt_up, on_toggle_language, on_toggle_engine, on_cancel, on_toggle_mode)
         self.shutdown = threading.Event()
 
     def run(self) -> None:
@@ -57,7 +57,7 @@ class HotkeyListener(threading.Thread):
 
         import keyboard
 
-        ptt_down, ptt_up, toggle_lang, toggle_engine, cancel_cb = self.callbacks
+        ptt_down, ptt_up, toggle_lang, toggle_engine, cancel_cb, toggle_mode_cb = self.callbacks
         ptt_names = _matching_names(self.cfg.hotkey)
         raw_key = self.cfg.hotkey.strip().lower()
 
@@ -126,6 +126,15 @@ class HotkeyListener(threading.Thread):
             except Exception:
                 pass
 
+        # Mode toggle hotkey (Dictation vs Agent vs Auto)
+        toggle_mode_key = getattr(self.cfg, "toggle_mode_key", "f10") or "f10"
+        if toggle_mode_key and toggle_mode_cb:
+            try:
+                keyboard.add_hotkey(toggle_mode_key, toggle_mode_cb, suppress=False)
+                log.info("Registered mode toggle hotkey: %s", toggle_mode_key)
+            except Exception as exc:
+                log.warning("Failed to register mode toggle hotkey: %s", exc)
+
         # Esc hotkey for cancelling running agent actions
         cancel_key = getattr(self.cfg, "cancel_key", "esc") or "esc"
         if cancel_key and cancel_cb:
@@ -136,8 +145,9 @@ class HotkeyListener(threading.Thread):
                 log.warning("Failed to register cancel hotkey: %s", exc)
 
         log.info(
-            "Hotkeys initialized (PTT='%s', Lang='%s', Engine='%s', Cancel='%s')",
+            "Hotkeys initialized (PTT='%s', Mode='%s', Lang='%s', Engine='%s', Cancel='%s')",
             self.cfg.hotkey,
+            toggle_mode_key,
             self.cfg.toggle_lang_key,
             self.cfg.toggle_engine_key,
             cancel_key,

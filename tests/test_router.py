@@ -51,3 +51,34 @@ def test_router_stop_command(router):
     res = router.route("Pasta, stop.")
     assert res.route == RouteType.AGENT
     assert res.command.lower() == "stop"
+
+
+def test_router_jarvis_prefix_english(router):
+    res = router.route("Jarvis, open Notepad.")
+    assert res.route == RouteType.AGENT
+    assert res.command.lower() == "open notepad"
+
+
+def test_router_jarvis_prefix_greek(router):
+    res = router.route("Τζάρβις, άνοιξε το YouTube.")
+    assert res.route == RouteType.AGENT
+    assert "youtube" in res.command.lower()
+
+
+def test_router_greek_phonetic_variants(router):
+    for phrase in ("Παστά, άνοιξε το Chrome.", "Βάστα, κλείσε το notepad."):
+        res = router.route(phrase)
+        assert res.route == RouteType.AGENT
+
+
+def test_router_forced_agent_mode(router):
+    # In AGENT mode, no wake word needed!
+    res = router.route("άνοιξε το notepad", forced_mode="agent")
+    assert res.route == RouteType.AGENT
+    assert "notepad" in res.command.lower()
+
+
+def test_router_forced_dictation_mode(router):
+    # In DICTATION mode, even wake words are typed as text
+    res = router.route("Jarvis, open Notepad.", forced_mode="dictation")
+    assert res.route == RouteType.TEXT

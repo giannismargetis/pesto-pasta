@@ -12,6 +12,7 @@ BG_KEY = "#010204"
 PILL_BG = (12, 16, 22)  # Obsidian night
 PILL_BORDER_NORMAL = (24, 54, 38)  # Basil / Pesto green
 PILL_BORDER_AGENT = (30, 64, 120)  # Electric Agent Sapphire
+PILL_BORDER_AUTO = (88, 44, 130)   # Modern Violet / Hybrid
 
 # Gradient color schemes
 GRAD_WHISPER = [
@@ -37,11 +38,12 @@ BAR_W = 4
 BAR_GAP = 6
 BAR_MAX_H = 32
 BAR_MIN_H = 4
-BARS_CY = 48
+BARS_CY = 50
 
 WIDTH = 560
-HEIGHT = 136
-TEXT_Y = 100
+HEIGHT = 152
+TEXT_Y = 96
+TELEMETRY_Y = 132
 
 
 def _blend(c0, c1, a):
@@ -61,6 +63,17 @@ class Overlay:
         self._status_text = "LISTENING"
         self._engine_label = cfg.engine.upper()
         self._language_label = cfg.language.upper()
+
+        # Mode & Mode Toggle
+        self._operation_mode = getattr(cfg, "mode", "auto").upper()
+        self._on_mode_toggle_callback = None
+
+        # GPU and inference telemetry
+        self._vram_pct = 0.0
+        self._vram_used_gb = 0.0
+        self._vram_total_gb = 0.0
+        self._last_latency_ms = 0.0
+        self._last_rtf = 0.0
 
         # Agent mode overlay properties
         self._is_agent_mode = False
@@ -122,6 +135,28 @@ class Overlay:
     def set_partial(self, text: str) -> None:
         with self._lock:
             self._partial_text = text
+
+    def set_mode_toggle_callback(self, cb) -> None:
+        self._on_mode_toggle_callback = cb
+
+    def set_operation_mode(self, mode: str) -> None:
+        with self._lock:
+            self._operation_mode = mode.upper()
+
+    def update_telemetry(
+        self,
+        vram_pct: float,
+        used_gb: float,
+        total_gb: float,
+        latency_ms: float,
+        rtf: float = 0.0,
+    ) -> None:
+        with self._lock:
+            self._vram_pct = vram_pct
+            self._vram_used_gb = used_gb
+            self._vram_total_gb = total_gb
+            self._last_latency_ms = latency_ms
+            self._last_rtf = rtf
 
     def show_toast(self, title: str, msg: str, duration: float = 1.6) -> None:
         with self._lock:
@@ -187,7 +222,16 @@ class Overlay:
                 x0, y0 = pad, pad
                 x1, y1 = WIDTH - pad, HEIGHT - pad
                 bg_color = _hex(PILL_BG)
-                border_color = _hex(PILL_BORDER_AGENT if is_agent else PILL_BORDER_NORMAL)
+
+                with self._lock:
+                    mode = self._operation_mode
+
+                if is_agent or mode == "AGENT":
+                    border_color = _hex(PILL_BORDER_AGENT)
+                elif mode == "DICTATION":
+                    border_color = _hex(PILL_BORDER_NORMAL)
+                else:
+                    border_color = _hex(PILL_BORDER_AUTO)
 
                 canvas.create_polygon(
                     x0 + r, y0, x1 - r, y0,
@@ -203,6 +247,12 @@ class Overlay:
                     tags=("pill",),
                 )
 
+            def on_canvas_click(event):
+                if self._on_mode_toggle_callback:
+                    self._on_mode_toggle_callback()
+
+            canvas.bind("<Button-1>", on_canvas_click)
+
             def render_header(is_agent: bool = False):
                 canvas.delete("header")
                 with self._lock:
@@ -212,17 +262,25 @@ class Overlay:
                     conf = self._agent_confidence
                     step = self._agent_step
                     max_s = self._agent_max_steps
+                    mode = self._operation_mode
 
                 if is_agent:
                     tag_color = "#38bdf8"
-                    header_left = "PASTA • AGENT"
+                    header_left = "⚡ AGENT RUN"
                     header_right = f"STEP {step}/{max_s}"
                     if conf > 0:
                         header_right += f" ({int(conf * 100)}%)"
                 else:
-                    tag_color = "#34d399" if eng == "WHISPER" else "#a3e635"
-                    header_left = "PASTA • VOICE"
-                    header_right = f"{eng} • {lng}"
+                    if mode == "AGENT":
+                        tag_color = "#38bdf8"
+                        header_left = "🔵 AGENT (F10)"
+                    elif mode == "DICTATION":
+                        tag_color = "#34d399"
+                        header_left = "🟢 DICTATION (F10)"
+                    else:
+                        tag_color = "#c084fc"
+                        header_left = "🟣 AUTO (F10)"
+                    header_right = f"{eng} (F11) • {lng} (F12)"
 
                 canvas.create_text(
                     28,
@@ -246,10 +304,37 @@ class Overlay:
                     WIDTH - 28,
                     22,
                     text=header_right,
-                    font=("Segoe UI", 9),
+                    font=("Segoe UI", 8),
                     fill="#94a3b8",
                     anchor="e",
                     tags=("header",),
+                )
+
+            def render_telemetry():
+                canvas.delete("telemetry")
+                with self._lock:
+                    vram_pct = self._vram_pct
+                    vram_used = self._vram_used_gb
+                    vram_total = self._vram_total_gb
+                    lat = self._last_latency_ms
+                    rtf = self._last_rtf
+                    eng = self._engine_label
+
+                if vram_total > 0:
+                    telemetry_str = f"🎮 GPU: {vram_pct:.1f}% VRAM ({vram_used:.2f}/{vram_total:.1f} GB)  •  ⏱️ {lat:.0f}ms (RTF {rtf:.2f}x)  •  {eng}"
+                elif lat > 0:
+                    telemetry_str = f"⏱️ {lat:.0f}ms (RTF {rtf:.2f}x)  •  {eng}  •  Click to switch Mode"
+                else:
+                    telemetry_str = f"Click to switch Mode (F10)  •  Engine: {eng} (F11)"
+
+                canvas.create_text(
+                    WIDTH // 2,
+                    TELEMETRY_Y,
+                    text=telemetry_str,
+                    font=("Segoe UI", 8),
+                    fill="#94a3b8",
+                    anchor="center",
+                    tags=("telemetry",),
                 )
 
             def render_bars():
@@ -411,6 +496,7 @@ class Overlay:
                             render_header(is_agent=is_agent)
                             render_bars()
                             render_text(is_agent=is_agent)
+                            render_telemetry()
                 except Exception:
                     pass
                 root.after(16, tick)
