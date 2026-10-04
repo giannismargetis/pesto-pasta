@@ -68,6 +68,7 @@ class Microphone:
         self._ring_samples = 0
         self._recording: Recording | None = None
         self._stream = None
+        self._stream_sr = 0
         self._last_level = 0.0
         self._frames_q: collections.deque[np.ndarray] = collections.deque(maxlen=400)
         self._frames_evt = threading.Event()
@@ -84,26 +85,55 @@ class Microphone:
         """Open the input stream; raises if no usable microphone exists."""
         import sounddevice as sd
 
-        device = self.s.device or None
-        if isinstance(device, str) and device.isdigit():
-            device = int(device)
-        if device is None:
-            default_in = sd.default.device[0] if sd.default.device is not None else -1
-            if default_in is None or default_in < 0:
-                raise RuntimeError("Windows reports no default microphone (is the headset connected and on?)")
-        self._stream = sd.InputStream(
-            samplerate=self.s.sample_rate, channels=1, dtype="int16", blocksize=0, latency="low",
-            device=device, callback=self._callback, finished_callback=self._on_finished,
-        )
-        self._stream.start()
+        device_idx, dev_info = resolve_input_device(self.s.device)
+        stream_sr = self.s.sample_rate
+        self._stream_sr = stream_sr
+        try:
+            self._stream = sd.InputStream(
+                samplerate=stream_sr, channels=1, dtype="int16", blocksize=0, latency="low",
+                device=device_idx, callback=self._callback, finished_callback=self._on_finished,
+            )
+            self._stream.start()
+        except Exception as exc:
+            # Fallback for devices (e.g. Windows WDM-KS) that reject 16000 Hz: try native rate
+            native_sr = int(dev_info.get("default_samplerate") or 44100)
+            if native_sr != stream_sr:
+                log.info("Opening microphone %s at native rate %d Hz (resampling to %d Hz)",
+                         dev_info.get("name"), native_sr, stream_sr)
+                self._stream = sd.InputStream(
+                    samplerate=native_sr, channels=1, dtype="int16", blocksize=0, latency="low",
+                    device=device_idx, callback=self._callback, finished_callback=self._on_finished,
+                )
+                self._stream.start()
+                self._stream_sr = native_sr
+            else:
+                raise
+
         info = sd.query_devices(self._stream.device)
         self.device_name = info.get("name", "") if isinstance(info, dict) else str(info)
         self.error = None
-        log.info("Microphone open: %s @ %d Hz (input latency %.0f ms)", self.device_name, self.s.sample_rate,
+        log.info("Microphone open: %s @ %d Hz (stream %d Hz, input latency %.0f ms)",
+                 self.device_name, self.s.sample_rate, self._stream_sr,
                  self._stream.latency * 1000)
         if self.on_frames is not None and not getattr(self, "_frames_started", False):
             self._frames_started = True
             threading.Thread(target=self._frames_loop, name="AudioFrames", daemon=True).start()
+
+    def switch_device(self, device: str) -> bool:
+        """Switch input to a different device immediately."""
+        self.s.device = device
+        with self._lock:
+            self._recording = None
+            self._ring.clear()
+            self._ring_samples = 0
+        if self._stream is not None:
+            try:
+                self._stream.stop()
+                self._stream.close()
+            except Exception:
+                pass
+            self._stream = None
+        return self.ensure_open()
 
     def ensure_open(self) -> bool:
         """Reopen the microphone if it is closed or was unplugged.
@@ -179,6 +209,10 @@ class Microphone:
     # -- PortAudio thread ------------------------------------------------------------
     def _callback(self, indata, frames, time_info, status) -> None:
         chunk = indata[:, 0].copy()
+        if getattr(self, "_stream_sr", 0) and self._stream_sr != self.s.sample_rate:
+            import scipy.signal
+            target_samples = int(round(len(chunk) * self.s.sample_rate / self._stream_sr))
+            chunk = scipy.signal.resample(chunk, target_samples).astype(np.int16)
         preroll_max = self.s.preroll_ms * self.s.sample_rate // 1000
         with self._lock:
             if self._recording is not None:
@@ -219,9 +253,106 @@ class Microphone:
 def list_input_devices() -> list[dict]:
     import sounddevice as sd
 
-    default = sd.default.device[0] if sd.default.device else None
-    return [
-        {"index": i, "name": d["name"], "default": i == default, "channels": d["max_input_channels"]}
-        for i, d in enumerate(sd.query_devices())
-        if d["max_input_channels"] > 0
-    ]
+    try:
+        hostapis = {i: h.get("name", "") for i, h in enumerate(sd.query_hostapis())}
+    except Exception:
+        hostapis = {}
+
+    default = sd.default.device[0] if (sd.default.device is not None and sd.default.device[0] >= 0) else None
+    devices = []
+    for i, d in enumerate(sd.query_devices()):
+        if d.get("max_input_channels", 0) > 0:
+            api = hostapis.get(d.get("hostapi"), "")
+            name = d.get("name", "")
+            full_name = f"{name} [{api}]" if api else name
+            devices.append({
+                "index": i,
+                "name": name,
+                "hostapi": api,
+                "full_name": full_name,
+                "default": i == default,
+                "channels": d.get("max_input_channels", 0),
+            })
+    return devices
+
+
+def resolve_input_device(device_spec: str | int | None) -> tuple[int, dict]:
+    """Find the best sounddevice input device index for a given device spec.
+
+    device_spec can be:
+      - None or "": Use system default
+      - int: Device index
+      - str: Device name or full_name ("name [hostapi]")
+    """
+    import sounddevice as sd
+
+    try:
+        hostapis = {i: h.get("name", "") for i, h in enumerate(sd.query_hostapis())}
+    except Exception:
+        hostapis = {}
+
+    all_devices = sd.query_devices()
+
+    # Case 1: System default
+    if not device_spec:
+        default_in = sd.default.device[0] if sd.default.device is not None else -1
+        if default_in is None or default_in < 0:
+            raise RuntimeError("Windows reports no default microphone (is the headset connected and on?)")
+        info = all_devices[default_in]
+        name = info.get("name", "")
+        if "stereo mix" in name.lower():
+            real_mics = [i for i, d in enumerate(all_devices)
+                         if d.get("max_input_channels", 0) > 0 and "stereo mix" not in d.get("name", "").lower()]
+            if not real_mics:
+                raise RuntimeError("Windows default input is Stereo Mix (connect or switch on your microphone)")
+        return default_in, info
+
+    # Case 2: Integer index or digit string
+    if isinstance(device_spec, int) or (isinstance(device_spec, str) and device_spec.isdigit()):
+        idx = int(device_spec)
+        if 0 <= idx < len(all_devices):
+            info = all_devices[idx]
+            if info.get("max_input_channels", 0) > 0:
+                return idx, info
+
+    # Case 3: String device spec
+    spec_str = str(device_spec).strip()
+    candidates = []
+
+    def api_rank(api_name: str) -> int:
+        low = api_name.lower()
+        if "wasapi" in low:
+            return 4
+        if "directsound" in low:
+            return 3
+        if "mme" in low:
+            return 2
+        if "wdm-ks" in low or "wdm" in low:
+            return 1
+        return 0
+
+    for i, d in enumerate(all_devices):
+        if d.get("max_input_channels", 0) > 0:
+            api_name = hostapis.get(d.get("hostapi"), "")
+            name = d.get("name", "")
+            full_label_bracket = f"{name} [{api_name}]"
+            full_label_paren = f"{name} ({api_name})"
+            score = 0
+            if spec_str == full_label_bracket or spec_str == full_label_paren:
+                score = 100
+            elif spec_str.lower() == name.lower():
+                score = 80
+            elif spec_str.lower() in full_label_bracket.lower() or spec_str.lower() in full_label_paren.lower():
+                score = 60
+            elif spec_str.lower() in name.lower() or name.lower() in spec_str.lower():
+                score = 40
+
+            if score > 0:
+                candidates.append((score, api_rank(api_name), i, d))
+
+    if candidates:
+        candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        best_idx = candidates[0][2]
+        return best_idx, candidates[0][3]
+
+    raise RuntimeError(f"Selected microphone '{spec_str}' is not connected or turned off")

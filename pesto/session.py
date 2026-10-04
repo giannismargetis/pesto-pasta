@@ -157,6 +157,18 @@ class VoiceSession:
         self.cfg.asr.language = mode
         self._publish_settings()
 
+    def set_audio_device(self, device: str) -> bool:
+        """Change the audio input device and apply immediately."""
+        self.cfg.audio.device = device
+        ok = self.mic.switch_device(device)
+        if ok:
+            self.bus.publish(Status(Phase.DONE, message="Microphone connected", detail=self.mic.device_name))
+        else:
+            self.bus.publish(Status(Phase.FAILED, message="Microphone unavailable",
+                                    detail=self.mic.error or "device not available"))
+        self._publish_settings()
+        return ok
+
     def cycle_language(self) -> None:
         order = ["auto", "el", "en"]
         self.set_language(order[(order.index(self.cfg.asr.language) + 1) % 3])

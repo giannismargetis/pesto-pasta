@@ -82,9 +82,18 @@ def cmd_transcribe(args) -> int:
 
 def cmd_devices(_args) -> int:
     from .audio import list_input_devices
+    from .config import load_config
 
-    for d in list_input_devices():
-        print(f"{'*' if d['default'] else ' '} [{d['index']}] {d['name']}")
+    cfg = load_config()
+    print(f"Configured device: {cfg.audio.device or '(system default)'}\n")
+    devs = list_input_devices()
+    if not devs:
+        print("No input audio devices found.")
+        return 0
+    for d in devs:
+        is_cfg = bool(cfg.audio.device and (cfg.audio.device == d["full_name"] or cfg.audio.device == d["name"]))
+        marker = "==>" if is_cfg else (" * " if d["default"] else "   ")
+        print(f"{marker} [{d['index']}] {d['full_name']}")
     return 0
 
 
@@ -101,6 +110,26 @@ def cmd_doctor(_args) -> int:
             ok = False
             print(f"  FAIL {name}: {exc}")
 
+    def _check_mic() -> str:
+        from .audio import list_input_devices, resolve_input_device
+        from .config import load_config
+
+        cfg = load_config()
+        configured = cfg.audio.device
+        if configured:
+            try:
+                _idx, info = resolve_input_device(configured)
+                return f"{info.get('name')} (configured: {configured})"
+            except Exception as e:
+                return f"configured device '{configured}' unavailable ({e})"
+        devs = list_input_devices()
+        def_mic = next((d["name"] for d in devs if d["default"]), None)
+        if def_mic:
+            return f"{def_mic} (default)"
+        if devs:
+            return f"no default set in Windows; {len(devs)} device(s) available (run 'python -m pesto devices')"
+        raise RuntimeError("no microphone found (connect or switch on your microphone)")
+
     print(f"PESTO {__version__}  home={paths.HOME}")
     check("python", lambda: sys.version.split()[0])
     check("GPU (NVML)", lambda: (lambda s: f"{s.name}, {s.used_mb:.0f}/{s.total_mb:.0f} MB" if s.available
@@ -112,8 +141,7 @@ def cmd_doctor(_args) -> int:
     check("onnxruntime CUDA binds", _ort_cuda_binds)
     check("Whisper model cached", lambda: _cached("mobiuslabsgmbh/faster-whisper-large-v3-turbo"))
     check("Parakeet model cached", lambda: _cached("istupakov/parakeet-tdt-0.6b-v3-onnx"))
-    check("microphone", lambda: next(d["name"] for d in __import__("pesto.audio", fromlist=["x"]).list_input_devices()
-                                      if d["default"]))
+    check("microphone", _check_mic)
     check("Qt (PySide6)", lambda: __import__("PySide6").__version__)
     check("torch not required", lambda: "not imported" if "torch" not in sys.modules else "imported (unexpected)")
     return 0 if ok else 1

@@ -193,6 +193,8 @@ class Dashboard(QMainWindow):
         self.settings_page = SettingsPage(app)
         self.add_page("Settings", _scroll(self.settings_page))
         self.add_page("Diagnostics", self._diagnostics())
+        self.nav.currentRowChanged.connect(lambda i: self.settings_page._refresh_mics()
+                                           if self.nav.item(i) and self.nav.item(i).text() == "Settings" else None)
         self.nav.setCurrentRow(0)
 
         self._timer = QTimer(self, interval=4000, timeout=self.refresh)
@@ -353,8 +355,9 @@ class Dashboard(QMainWindow):
         snap = gpu.snapshot()
         loads = ", ".join(f"{k} {v:.1f} s" for k, v in a.engines.load_seconds.items()) or "not loaded yet"
         db_mb = paths.DB_PATH.stat().st_size / 2**20 if paths.DB_PATH.exists() else 0
+        cfg_mic = a.cfg.audio.device or "system default"
         lines = [
-            f"<b>Microphone</b>: {a.session.mic.device_name or 'not available — ' + (a.session.mic.error or 'unknown')}",
+            f"<b>Microphone</b>: {a.session.mic.device_name or 'not available — ' + (a.session.mic.error or 'unknown')} (configured: {cfg_mic})",
             f"<b>Engine</b>: {a.engines.active_name} · state {a.engines.state} · device {a.engines.device}",
             f"<b>Model load time</b>: {loads}",
             f"<b>GPU</b>: {snap.name if snap.available else 'none detected'}"
@@ -401,6 +404,20 @@ class SettingsPage(QWidget):
                                cfg.asr.language)
         f.addRow("Engine", self.engine)
         f.addRow("Language", self.language)
+
+        f = section("Audio input", "Choose your microphone. 'Default' uses the Windows default recording device.")
+        mic_row = QHBoxLayout()
+        self.mic_combo = QComboBox()
+        self.mic_refresh = QPushButton("↻")
+        self.mic_refresh.setToolTip("Rescan audio devices")
+        self.mic_refresh.setFixedWidth(32)
+        self.mic_refresh.clicked.connect(self._refresh_mics)
+        mic_row.addWidget(self.mic_combo, 1)
+        mic_row.addWidget(self.mic_refresh)
+        f.addRow("Microphone", mic_row)
+        self.mic_status = label("", "faint")
+        f.addRow("", self.mic_status)
+        self._refresh_mics()
 
         f = section("Input")
         self.mode = _combo([("ptt", "Push-to-talk (hold a key)"), ("vad", "Hands-free (voice activity) ↻")], cfg.input.mode)
@@ -453,6 +470,51 @@ class SettingsPage(QWidget):
         lay.addStretch(1)
         self.extra_savers = []
 
+    def _refresh_mics(self) -> None:
+        import sounddevice as sd
+        try:
+            sd._terminate()
+            sd._initialize()
+        except Exception:
+            pass
+
+        current = self.mic_combo.currentData() if self.mic_combo.count() > 0 else self.app.cfg.audio.device
+        self.mic_combo.clear()
+        self.mic_combo.addItem("Default (System Default)", "")
+
+        from ..audio import list_input_devices
+        devices = list_input_devices()
+        found_current = not current
+        for d in devices:
+            val = d["full_name"]
+            text = d["full_name"]
+            if d.get("default"):
+                text += " (Windows Default)"
+            self.mic_combo.addItem(text, val)
+            if current and (current == val or current == d["name"]):
+                found_current = True
+
+        if current and not found_current:
+            self.mic_combo.addItem(f"{current} (disconnected)", current)
+
+        idx = self.mic_combo.findData(current)
+        if idx < 0 and current:
+            for i in range(self.mic_combo.count()):
+                data = self.mic_combo.itemData(i)
+                if data and (current in data or data in current):
+                    idx = i
+                    break
+        self.mic_combo.setCurrentIndex(max(0, idx))
+
+        active = getattr(self.app.session.mic, "device_name", "")
+        err = getattr(self.app.session.mic, "error", "")
+        if active:
+            self.mic_status.setText(f"Active device: {active}")
+        elif err:
+            self.mic_status.setText(f"Status: {err}")
+        else:
+            self.mic_status.setText("")
+
     def add_section(self, widget: QWidget, saver) -> None:
         self.extra_sections.insertWidget(self.extra_sections.count() - 2, widget)
         self.extra_savers.append(saver)
@@ -462,6 +524,8 @@ class SettingsPage(QWidget):
         if self.engine.currentData() != cfg.asr.engine:
             s.set_engine(self.engine.currentData())
         s.set_language(self.language.currentData())
+        selected_mic = self.mic_combo.currentData() or ""
+        s.set_audio_device(selected_mic)
         cfg.input.mode = self.mode.currentData()
         cfg.input.ptt_key = self.ptt_key.text().strip() or "right ctrl"
         cfg.input.hold_threshold_ms = self.hold.value()
@@ -480,6 +544,7 @@ class SettingsPage(QWidget):
             saver()
         cfg.save()
         self.saved.setText("Saved. Settings marked ↻ apply after restart.")
+        self._refresh_mics()
 
 
 def _combo(items, current) -> QComboBox:
