@@ -116,3 +116,23 @@ def test_legacy_audio_device_migrated(tmp_path):
     path.write_text(json.dumps({"input_device": "Razer Headset"}), encoding="utf-8")
     cfg = load_config(path)
     assert cfg.audio.device == "Razer Headset"
+
+
+def test_microphone_is_open_safe_on_invalid_stream_pointer():
+    s = AudioSettings()
+    mic = Microphone(s)
+
+    class BrokenStream:
+        @property
+        def active(self):
+            import sounddevice as sd
+            raise sd.PortAudioError("Invalid stream pointer", -9988)
+
+    mic._stream = BrokenStream()
+    # is_open must catch PortAudioError and return False rather than crashing
+    assert mic.is_open is False
+
+    # Also when error is already set, is_open must be False immediately
+    mic.error = "microphone disconnected"
+    assert mic.is_open is False
+

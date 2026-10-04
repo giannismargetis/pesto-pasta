@@ -123,15 +123,25 @@ class VoiceSession:
 
     def _mic_watchdog(self) -> None:
         """Recover automatically when a microphone appears or comes back."""
-        was_open = self.mic.is_open
+        try:
+            was_open = self.mic.is_open
+        except Exception:
+            was_open = False
         while not self._stop.wait(3.0):
             if self._current is not None:
                 continue
-            ok = self.mic.ensure_open()
+            try:
+                ok = self.mic.ensure_open()
+            except Exception as exc:
+                log.warning("MicWatchdog check error: %s", exc)
+                ok = False
             if ok != was_open:
                 was_open = ok
                 if ok:
                     self.bus.publish(Status(Phase.DONE, message="Microphone connected", detail=self.mic.device_name))
+                else:
+                    self.bus.publish(Status(Phase.FAILED, message="Microphone disconnected",
+                                            detail=getattr(self.mic, "error", None) or "microphone lost"))
                 self._publish_settings()
 
     def stop(self) -> None:
@@ -165,7 +175,7 @@ class VoiceSession:
             self.bus.publish(Status(Phase.DONE, message="Microphone connected", detail=self.mic.device_name))
         else:
             self.bus.publish(Status(Phase.FAILED, message="Microphone unavailable",
-                                    detail=self.mic.error or "device not available"))
+                                    detail=getattr(self.mic, "error", None) or "device not available"))
         self._publish_settings()
         return ok
 
@@ -231,7 +241,7 @@ class VoiceSession:
         if not self.mic.ensure_open():
             # Never pretend to listen with a dead microphone.
             self.bus.publish(Status(Phase.FAILED, message="No microphone",
-                                    detail="connect or switch on your microphone"))
+                                    detail=getattr(self.mic, "error", None) or "connect or switch on your microphone"))
             return None
         hwnd = foreground_window()
         it = Interaction(uuid.uuid4().hex[:12], input_mode, now_iso(), t, target_hwnd=hwnd)

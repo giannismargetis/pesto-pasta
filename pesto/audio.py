@@ -79,7 +79,12 @@ class Microphone:
     # -- lifecycle -------------------------------------------------------------------
     @property
     def is_open(self) -> bool:
-        return self._stream is not None and bool(getattr(self._stream, "active", False))
+        if self._stream is None or self.error is not None:
+            return False
+        try:
+            return bool(self._stream.active)
+        except Exception:
+            return False
 
     def start(self) -> None:
         """Open the input stream; raises if no usable microphone exists."""
@@ -122,6 +127,7 @@ class Microphone:
     def switch_device(self, device: str) -> bool:
         """Switch input to a different device immediately."""
         self.s.device = device
+        self.error = None
         with self._lock:
             self._recording = None
             self._ring.clear()
@@ -129,6 +135,9 @@ class Microphone:
         if self._stream is not None:
             try:
                 self._stream.stop()
+            except Exception:
+                pass
+            try:
                 self._stream.close()
             except Exception:
                 pass
@@ -169,6 +178,7 @@ class Microphone:
         if not self._stop.is_set():
             log.warning("Microphone stream stopped (device unplugged?)")
             self.error = "microphone disconnected"
+            self.device_name = ""
 
     def close(self) -> None:
         self._stop.set()

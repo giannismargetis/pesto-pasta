@@ -21,6 +21,7 @@ class FakeMic:
         self.rec = None
         self.device_name = "fake"
         self.available = True
+        self.error = None
 
     @property
     def is_open(self):
