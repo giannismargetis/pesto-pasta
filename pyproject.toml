@@ -17,7 +17,11 @@ dependencies = [
     "onnx-asr[hub]>=0.10",
     # 1.24+ is built for CUDA 13; CTranslate2 4.x and the cuBLAS/cuDNN wheels below are CUDA 12.
     "onnxruntime-gpu>=1.20,<1.24; platform_system == 'Windows'",
+    # CUDA 12 runtime for both runtimes (no PyTorch needed). Note: faster-whisper also pulls the
+    # CPU "onnxruntime" package, which must be uninstalled (it overwrites onnxruntime-gpu's files).
     "nvidia-cublas-cu12; platform_system == 'Windows'",
+    "nvidia-cuda-runtime-cu12; platform_system == 'Windows'",
+    "nvidia-cufft-cu12; platform_system == 'Windows'",
     "nvidia-cudnn-cu12>=9,<10; platform_system == 'Windows'",
     "huggingface_hub>=0.25",
     "PySide6-Essentials>=6.8",

@@ -35,3 +35,6 @@ benchmark_results/
 /data/
 research/data/fleurs/
 research/data/fetch.log
+
+build/
+dist/

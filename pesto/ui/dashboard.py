@@ -438,9 +438,13 @@ class SettingsPage(QWidget):
         self.hud.setChecked(cfg.ui.hud)
         self.trailing = QCheckBox("Add a space after inserted text")
         self.trailing.setChecked(cfg.inject.trailing_space)
+        from .. import startup
+
+        self.autostart = QCheckBox("Start with Windows")
+        self.autostart.setChecked(startup.is_enabled(app.product))
         self.method = _combo([("auto", "Automatic"), ("unicode", "Type (keeps clipboard)"), ("clipboard", "Paste")],
                              cfg.inject.method)
-        for wdg in (self.preview, self.sounds, self.hud, self.trailing):
+        for wdg in (self.preview, self.sounds, self.hud, self.trailing, self.autostart):
             f.addRow("", wdg)
         f.addRow("Insertion method", self.method)
 
@@ -536,6 +540,11 @@ class SettingsPage(QWidget):
         cfg.ui.hud = self.hud.isChecked()
         cfg.inject.trailing_space = self.trailing.isChecked()
         cfg.inject.method = self.method.currentData()
+        from .. import startup
+
+        product = self.app.product
+        startup.set_enabled(product, product.lower(), self.autostart.isChecked())
+        cfg.general.run_on_startup = self.autostart.isChecked()
         cfg.experiment.participant = self.participant.text().strip()
         cfg.experiment.condition = self.condition.text().strip()
         cfg.experiment.added_latency_ms = self.added.value()

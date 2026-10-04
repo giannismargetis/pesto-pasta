@@ -12,6 +12,8 @@ RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 
 def command(module: str) -> str:
+    if getattr(sys, "frozen", False):  # installed app: the exe itself
+        return f'"{sys.executable}"'
     exe = Path(sys.executable)
     pythonw = exe.with_name("pythonw.exe")
     return f'"{pythonw if pythonw.exists() else exe}" -m {module}'

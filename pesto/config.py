@@ -104,6 +104,7 @@ class ExperimentSettings:
 class GeneralSettings:
     run_on_startup: bool = False
     log_level: str = "INFO"
+    first_run_done: bool = False
 
 
 _CORE_SECTIONS: dict[str, type] = {
