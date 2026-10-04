@@ -38,3 +38,12 @@ research/data/fetch.log
 
 build/
 dist/
+
+# personal scratch scripts and local structure explorer
+*explorer*
+scripts/_*
+scripts/make_explorer.py
+scripts/explorer_template.html
+scripts/check_explorer.py
+scripts/_stop_server.py
+scripts/_fixup.py

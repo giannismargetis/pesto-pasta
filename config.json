@@ -1,49 +1,99 @@
 {
-  "engine": "whisper",
-  "language": "auto",
-  "hotkey": "right ctrl",
-  "toggle_lang_key": "f12",
-  "toggle_engine_key": "f11",
-  "cancel_key": "esc",
-  "beep_enabled": true,
-  "overlay_enabled": true,
-  "start_minimized": false,
-  "run_on_startup": false,
-  "partial_chunk_seconds": 2.0,
-  "silence_flush_seconds": 0.7,
-  "max_recording_seconds": 60,
-  "idle_unload_minutes": 15,
-  "whisper_model": "large-v3-turbo",
-  "whisper_compute_cuda": "int8_float16",
-  "whisper_compute_cpu": "int8",
-  "whisper_beam_size": 2,
-  "whisper_vad_filter": true,
-  "parakeet_model": "nemo-parakeet-tdt-0.6b-v3",
-  "parakeet_quantization": "int8",
-  "parakeet_provider": "",
-  "sample_rate": 16000,
+  "general": {
+    "run_on_startup": false,
+    "log_level": "INFO"
+  },
+  "asr": {
+    "engine": "whisper",
+    "language": "auto",
+    "languages": [
+      "el",
+      "en"
+    ],
+    "device": "auto",
+    "whisper_model": "large-v3-turbo",
+    "whisper_compute_type": "int8_float16",
+    "whisper_cpu_compute_type": "int8",
+    "whisper_beam_size": 2,
+    "whisper_vad": false,
+    "whisper_prompt": true,
+    "whisper_temperature_fallback": true,
+    "parakeet_model": "nemo-parakeet-tdt-0.6b-v3",
+    "parakeet_quantization": "int8",
+    "idle_unload_minutes": 15
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "device": "",
+    "preroll_ms": 300,
+    "min_utterance_ms": 250,
+    "max_utterance_s": 60
+  },
+  "input": {
+    "mode": "ptt",
+    "ptt_key": "right ctrl",
+    "hold_threshold_ms": 150,
+    "cancel_key": "esc",
+    "vad_toggle_key": "ctrl+alt+shift+v",
+    "language_key": "ctrl+alt+shift+l",
+    "engine_key": "ctrl+alt+shift+e",
+    "mode_key": "ctrl+alt+shift+m",
+    "vad_threshold": 0.5,
+    "vad_end_silence_ms": 700,
+    "vad_min_speech_ms": 250
+  },
+  "inject": {
+    "method": "auto",
+    "clipboard_threshold_chars": 600,
+    "clipboard_apps": [
+      "mstsc.exe",
+      "vmconnect.exe"
+    ],
+    "restore_clipboard": true,
+    "trailing_space": true
+  },
+  "ui": {
+    "hud": true,
+    "live_preview": true,
+    "sounds": true,
+    "hud_position": "bottom",
+    "start_dashboard": false
+  },
+  "experiment": {
+    "participant": "",
+    "condition": "",
+    "added_latency_ms": 0,
+    "save_audio": false
+  },
   "agent": {
-    "enabled": true,
-    "model": "decider-2b",
-    "model_runtime": "gpu",
-    "model_revision": "v11",
-    "model_quantization": "Q4_K_M",
-    "confidence_threshold": 0.72,
-    "confirmation_threshold": 0.55,
-    "max_steps": 30,
-    "loop_timeout_seconds": 120,
-    "max_retries": 2,
-    "max_same_state_repeats": 3,
-    "allow_shell_commands": true,
-    "headless_browser": false
+    "mode": "command",
+    "mode_key": "ctrl+alt+shift+m",
+    "wake_words": [
+      "pasta",
+      "jarvis",
+      "πάστα",
+      "τζάρβις"
+    ],
+    "auto_threshold": 0.72,
+    "confirm_threshold": 0.55,
+    "confirm_timeout_s": 10.0,
+    "max_steps": 6,
+    "step_timeout_s": 8.0,
+    "llm_enabled": false,
+    "llm_url": "http://127.0.0.1:11434",
+    "llm_model": "qwen3.5:9b-q4_K_M",
+    "llm_timeout_s": 20.0,
+    "preferred_browser": ""
   },
   "permissions": {
+    "apps": true,
+    "windows": true,
     "browser": true,
-    "filesystem_read": true,
-    "filesystem_write": false,
+    "keyboard": true,
+    "system": true,
+    "files": true,
+    "ui_click": true,
     "shell": "allowlist",
-    "process_termination": false,
-    "email_send": false,
-    "destructive_actions": "confirm"
+    "close_windows": "confirm"
   }
 }
