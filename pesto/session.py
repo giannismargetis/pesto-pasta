@@ -95,7 +95,7 @@ class VoiceSession:
         self.on_escape: list[Callable[[], bool]] = []  # extensions; return True if they handled it
         self.session_id = uuid.uuid4().hex[:8]
         self.mic = Microphone(cfg.audio, on_level=self._on_level, on_limit=self._on_limit,
-                              on_frames=self._on_frames if cfg.input.mode == "vad" else None)
+                              on_frames=self._on_frames)
         self._jobs: queue.PriorityQueue = queue.PriorityQueue()
         self._seq = itertools.count()
         self._current: Interaction | None = None
@@ -103,8 +103,9 @@ class VoiceSession:
         self._stop = threading.Event()
         self._preview_busy = threading.Event()
         self._paused = False
-        self._vad = VadSegmenter(self) if cfg.input.mode == "vad" else None
+        self._vad = VadSegmenter(self)
         self.vad_listening = cfg.input.mode == "vad"
+        self.enabled = True  # False: ignore all speech input (e.g. keyboard condition of a study)
         self.engines.on_state = lambda m: self._publish_settings()
         self.last_completed: Interaction | None = None
 
@@ -159,10 +160,22 @@ class VoiceSession:
         return self._paused
 
     def toggle_vad_listening(self) -> None:
-        if self._vad is None:
+        if self.cfg.input.mode != "vad":
             return
         self.vad_listening = not self.vad_listening
         self._vad.reset()
+        self._publish_settings()
+
+    def set_input_mode(self, mode: str) -> None:
+        """Switch between push-to-talk and hands-free at runtime."""
+        if mode not in ("ptt", "vad"):
+            raise ValueError(mode)
+        self.cfg.input.mode = mode
+        self._vad.reset()
+        self.vad_listening = mode == "vad"
+        self._publish_settings()
+
+    def publish_settings(self) -> None:
         self._publish_settings()
 
     def _publish_settings(self) -> None:
@@ -189,7 +202,7 @@ class VoiceSession:
                     return
 
     def _begin(self, input_mode: str, t: float, recording: Recording | None = None) -> Interaction | None:
-        if self._paused:
+        if self._paused or not self.enabled:
             return None
         hwnd = foreground_window()
         it = Interaction(uuid.uuid4().hex[:12], input_mode, now_iso(), t, target_hwnd=hwnd)
@@ -249,7 +262,7 @@ class VoiceSession:
             self.bus.publish(Level(min(1.0, rms * 12.0)))
 
     def _on_frames(self, chunk: np.ndarray) -> None:
-        if self._vad is not None and self.vad_listening and not self._paused:
+        if self.cfg.input.mode == "vad" and self.vad_listening and self.enabled and not self._paused:
             self._vad.feed(chunk)
 
     # -- worker -----------------------------------------------------------------------

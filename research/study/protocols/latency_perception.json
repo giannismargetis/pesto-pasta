@@ -1,0 +1,23 @@
+{
+  "name": "latency_perception",
+  "language": "el",
+  "description": "Push-to-talk dictation with controlled additional delay before the text appears. Participants rate perceived responsiveness after each trial; workload after each block. Total delay = measured system latency + added delay (both logged per trial).",
+  "research_questions": [
+    "RQ4: At what total release-to-text latency does dictation stop feeling immediate?",
+    "RQ5: Does added latency increase perceived workload (raw NASA-TLX) or change speaking behaviour (utterance length, re-dictations)?"
+  ],
+  "trials_per_condition": 8,
+  "practice_trials": 1,
+  "rate_each_trial": true,
+  "tlx_after_block": true,
+  "conditions": [
+    {"name": "delay_0", "input": "ptt", "added_latency_ms": 0,
+     "instructions": "Κρατήστε πατημένο το δεξί Ctrl, πείτε την πρόταση και αφήστε το. Μετά από κάθε πρόταση βαθμολογήστε πόσο γρήγορα σας φάνηκε ότι απάντησε το σύστημα."},
+    {"name": "delay_300", "input": "ptt", "added_latency_ms": 300,
+     "instructions": "Ίδια διαδικασία με πριν."},
+    {"name": "delay_700", "input": "ptt", "added_latency_ms": 700,
+     "instructions": "Ίδια διαδικασία με πριν."},
+    {"name": "delay_1500", "input": "ptt", "added_latency_ms": 1500,
+     "instructions": "Ίδια διαδικασία με πριν."}
+  ]
+}

@@ -29,6 +29,17 @@ log = get_logger("inject")
 if sys.platform == "win32":
     user32 = ctypes.WinDLL("user32", use_last_error=True)
     kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    # Explicit prototypes: ctypes defaults to C int, which truncates 64-bit
+    # handles/pointers (this broke SetWindowsHookEx in development).
+    user32.GetForegroundWindow.restype = wintypes.HWND
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
+                                                    ctypes.POINTER(wintypes.DWORD)]
+    kernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]
+    kernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]
+    kernel32.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]
 else:  # pragma: no cover - the product is Windows-only; tests import pure helpers
     user32 = kernel32 = None
 

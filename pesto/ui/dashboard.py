@@ -7,7 +7,7 @@ import sqlite3
 from datetime import datetime
 
 import numpy as np
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, QRectF, Qt, QTimer
+from PySide6.QtCore import QAbstractTableModel, QRectF, Qt, QTimer
 from PySide6.QtGui import QPainter, QPen
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFormLayout, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
@@ -118,10 +118,10 @@ class HistoryModel(QAbstractTableModel):
             self.rows = query("SELECT * FROM interactions ORDER BY started_at DESC LIMIT 1000")
         self.endResetModel()
 
-    def rowCount(self, parent=QModelIndex()) -> int:
+    def rowCount(self, parent=None) -> int:
         return len(self.rows)
 
-    def columnCount(self, parent=QModelIndex()) -> int:
+    def columnCount(self, parent=None) -> int:
         return len(self.COLS)
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):

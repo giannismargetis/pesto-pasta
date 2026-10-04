@@ -115,6 +115,12 @@ class KeyboardHook(threading.Thread):
         user32.CallNextHookEx.restype = LRESULT
         user32.SetWindowsHookExW.argtypes = [ctypes.c_int, HOOKPROC, wintypes.HINSTANCE, wintypes.DWORD]
         user32.SetWindowsHookExW.restype = wintypes.HHOOK
+        # Without an explicit restype the 64-bit module handle is truncated to a
+        # C int and SetWindowsHookEx fails with ERROR_MOD_NOT_FOUND (126).
+        kernel32.GetModuleHandleW.argtypes = [wintypes.LPCWSTR]
+        kernel32.GetModuleHandleW.restype = wintypes.HMODULE
+        user32.UnhookWindowsHookEx.argtypes = [wintypes.HHOOK]
+        user32.GetMessageW.argtypes = [ctypes.POINTER(wintypes.MSG), wintypes.HWND, wintypes.UINT, wintypes.UINT]
 
         def proc(n_code, w_param, l_param):
             if n_code == 0:

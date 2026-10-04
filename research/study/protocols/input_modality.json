@@ -1,0 +1,22 @@
+{
+  "name": "input_modality",
+  "language": "el",
+  "description": "Within-subjects comparison of keyboard, push-to-talk dictation and hands-free (VAD) dictation for copying Greek academic sentences.",
+  "research_questions": [
+    "RQ1: Do text-entry speed (WPM) and error rate differ between keyboard and speech input in Greek?",
+    "RQ2: Does speech input change perceived workload (raw NASA-TLX) compared with the keyboard?",
+    "RQ3: How do push-to-talk and voice-activity (hands-free) dictation compare in speed, errors and workload?"
+  ],
+  "trials_per_condition": 8,
+  "practice_trials": 2,
+  "rate_each_trial": false,
+  "tlx_after_block": true,
+  "conditions": [
+    {"name": "keyboard", "input": "keyboard",
+     "instructions": "Πληκτρολογήστε κάθε πρόταση όπως εμφανίζεται, όσο γρήγορα και σωστά μπορείτε. Διορθώστε τα λάθη που βλέπετε. Πατήστε Ctrl+Enter για την επόμενη."},
+    {"name": "voice_ptt", "input": "ptt",
+     "instructions": "Κρατήστε πατημένο το δεξί Ctrl, διαβάστε την πρόταση φωναχτά και αφήστε το πλήκτρο. Διορθώστε λάθη με το πληκτρολόγιο ή ξαναπείτε τη φράση. Πατήστε Ctrl+Enter για την επόμενη."},
+    {"name": "voice_vad", "input": "vad",
+     "instructions": "Απλώς διαβάστε την πρόταση φωναχτά· το σύστημα καταλαβαίνει μόνο του πότε τελειώσατε. Διορθώστε λάθη με το πληκτρολόγιο. Πατήστε Ctrl+Enter για την επόμενη."}
+  ]
+}

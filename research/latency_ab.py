@@ -78,8 +78,9 @@ def paired(args) -> None:
             for key in order:
                 snap = gpu.snapshot()
                 t0 = time.perf_counter()
-                systems[key].transcribe(audio, lang)
+                text, _ = systems[key].transcribe(audio, lang)
                 row[f"{key}_ms"] = round((time.perf_counter() - t0) * 1000, 2)
+                row[f"{key}_chars"] = len(text or "")  # empty output = failure, not speed
                 row[f"{key}_gpu_util"] = snap.util_pct
                 row[f"{key}_clock"] = snap.clock_mhz
             rows.append(row)
@@ -88,6 +89,7 @@ def paired(args) -> None:
                 print(f"  {i + 1}/{len(clips)}", flush=True)
 
     summary = {"a": args.a, "b": args.b, "engine": args.engine, "n_clips": len(rows),
+               "empty_outputs": {"A": sum(r["A_chars"] == 0 for r in rows), "B": sum(r["B_chars"] == 0 for r in rows)},
                "gpu_used_mb_at_start": round(gpu.snapshot().used_mb), "by_kind": {}}
     rng = np.random.default_rng(7)
     for kind in ("short", "full", "all"):
@@ -173,3 +175,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    sys.stdout.flush()
+    os._exit(0)  # skip CTranslate2/CUDA teardown, which can crash on Windows after results are saved

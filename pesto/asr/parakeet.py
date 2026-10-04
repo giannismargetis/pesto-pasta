@@ -12,11 +12,8 @@ while the UI claimed CUDA. We report the provider that was really bound.
 
 from __future__ import annotations
 
-import importlib.util
-import os
 import threading
 import time
-from pathlib import Path
 
 import numpy as np
 
@@ -28,24 +25,6 @@ from .models import PARAKEET_REPOS, resolve_snapshot
 log = get_logger("asr.parakeet")
 
 MAX_CHUNK_S = 25.0  # attention cost grows quadratically; split very long input at quiet points
-
-
-def _register_cuda_dlls() -> None:
-    """Make CUDA/cuDNN DLLs visible to onnxruntime-gpu without importing torch."""
-    try:
-        import onnxruntime as ort
-
-        if hasattr(ort, "preload_dlls"):
-            ort.preload_dlls(cuda=True, cudnn=True, msvc=False)
-    except Exception as exc:
-        log.debug("preload_dlls: %s", exc)
-    for pkg in ("torch", "ctranslate2"):
-        spec = importlib.util.find_spec(pkg)
-        if spec and spec.origin:
-            lib = Path(spec.origin).parent / ("lib" if pkg == "torch" else "")
-            if lib.is_dir() and hasattr(os, "add_dll_directory"):
-                os.add_dll_directory(str(lib))
-                os.environ["PATH"] = str(lib) + os.pathsep + os.environ.get("PATH", "")
 
 
 def split_at_quiet_points(audio: np.ndarray, sr: int, max_s: float = MAX_CHUNK_S) -> list[np.ndarray]:
@@ -70,6 +49,7 @@ class ParakeetEngine(Engine):
         self.sr = sample_rate
         self._model = None
         self._lock = threading.Lock()
+        self.quantization = ""
 
     @property
     def loaded(self) -> bool:
@@ -83,19 +63,30 @@ class ParakeetEngine(Engine):
 
             want_gpu = self.s.device in ("auto", "cuda") and "CUDAExecutionProvider" in ort.get_available_providers()
             if want_gpu:
-                _register_cuda_dlls()
+                from ..cuda import register_cuda_libraries
+
+                register_cuda_libraries()
             import onnx_asr
 
-            quant = self.s.parakeet_quantization or None
+            q = (self.s.parakeet_quantization or "fp32").lower()
+            if q == "auto":
+                q = "fp32" if want_gpu else "int8"
+            quant = "int8" if q == "int8" else None
+            self.quantization = q
             repo = PARAKEET_REPOS.get(self.s.parakeet_model, self.s.parakeet_model)
             pattern = ["*.int8.onnx", "config.json", "vocab.txt"] if quant == "int8" else [
                 "encoder-model.onnx", "encoder-model.onnx.data", "decoder_joint-model.onnx", "config.json", "vocab.txt"]
             path = resolve_snapshot(repo, allow_patterns=pattern)
-            providers = ["CUDAExecutionProvider", "CPUExecutionProvider"] if want_gpu else ["CPUExecutionProvider"]
+            # cuDNN's default EXHAUSTIVE algorithm search re-benchmarks every new
+            # input shape; with variable-length speech that means seconds of
+            # extra latency on most utterances. HEURISTIC picks without timing.
+            cuda_opts = {"cudnn_conv_algo_search": "HEURISTIC", "arena_extend_strategy": "kSameAsRequested"}
+            providers = ([("CUDAExecutionProvider", cuda_opts), "CPUExecutionProvider"] if want_gpu
+                         else ["CPUExecutionProvider"])
             self._model = onnx_asr.load_model(self.s.parakeet_model, path, quantization=quant, providers=providers)
             self.device = self._bound_provider() or "cpu"
         self.transcribe(np.zeros(self.sr, dtype=np.float32))  # warm up kernels / allocator
-        log.info("Parakeet ready on %s (quantization=%s)", self.device, self.s.parakeet_quantization or "none")
+        log.info("Parakeet ready on %s (%s)", self.device, self.quantization)
 
     def _bound_provider(self) -> str | None:
         """Inspect the encoder session for the provider actually in use."""

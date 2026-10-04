@@ -9,7 +9,6 @@ import time
 
 from pesto.cli import _apply_overrides, _utf8_console, build_parser, run_headless
 
-from . import __version__
 
 
 def cmd_run(args) -> int:

@@ -84,7 +84,7 @@ class PastaExtension:
         cfg = self.app.cfg
         cfg.agent.mode = mode
         self.app.session.mode_label = mode
-        self.app.session._publish_settings()
+        self.app.session.publish_settings()
         self.app.bus.publish(Status(Phase.DONE, "", MODE_LABELS[mode], detail="mode",
                                     data={"command": mode != "dictation"}))
 

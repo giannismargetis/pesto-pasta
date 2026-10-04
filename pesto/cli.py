@@ -107,6 +107,9 @@ def cmd_doctor(_args) -> int:
                                   else "no NVIDIA GPU (CPU mode)")(gpu.snapshot()))
     check("CTranslate2 CUDA devices", lambda: __import__("ctranslate2").get_cuda_device_count())
     check("onnxruntime providers", lambda: ", ".join(__import__("onnxruntime").get_available_providers()))
+    check("CUDA libraries", lambda: ", ".join(__import__("pesto.cuda", fromlist=["x"]).register_cuda_libraries())
+                                     or "none found (GPU engines will fall back to CPU)")
+    check("onnxruntime CUDA binds", _ort_cuda_binds)
     check("Whisper model cached", lambda: _cached("mobiuslabsgmbh/faster-whisper-large-v3-turbo"))
     check("Parakeet model cached", lambda: _cached("istupakov/parakeet-tdt-0.6b-v3-onnx"))
     check("microphone", lambda: next(d["name"] for d in __import__("pesto.audio", fromlist=["x"]).list_input_devices()
@@ -114,6 +117,22 @@ def cmd_doctor(_args) -> int:
     check("Qt (PySide6)", lambda: __import__("PySide6").__version__)
     check("torch not required", lambda: "not imported" if "torch" not in sys.modules else "imported (unexpected)")
     return 0 if ok else 1
+
+
+def _ort_cuda_binds() -> str:
+    """Create a trivial session: get_available_providers() lists CUDA even when
+    its DLLs cannot load (the original silent CPU fallback)."""
+    import onnxruntime as ort
+    from faster_whisper.utils import get_assets_path
+
+    if "CUDAExecutionProvider" not in ort.get_available_providers():
+        return "CPU-only onnxruntime installed"
+    ort.set_default_logger_severity(4)
+    s = ort.InferenceSession(f"{get_assets_path()}/silero_vad_v6.onnx",
+                             providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+    if s.get_providers()[0] != "CUDAExecutionProvider":
+        raise RuntimeError("CUDA provider failed to load (CUDA/cuDNN version mismatch?)")
+    return "yes"
 
 
 def _cached(repo: str) -> str:

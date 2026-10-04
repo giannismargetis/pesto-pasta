@@ -1,0 +1,106 @@
+{
+  "tag": "v3-parakeet-gpu-el",
+  "manifest": "research\\data\\manifests\\fleurs_el_200.jsonl",
+  "n": 200,
+  "audio_seconds": 2168.3,
+  "config": {
+    "impl": "current",
+    "language_mode": "auto",
+    "engine": "whisper",
+    "language": "auto",
+    "languages": [
+      "el",
+      "en"
+    ],
+    "device": "cuda",
+    "whisper_model": "large-v3-turbo",
+    "whisper_compute_type": "int8_float16",
+    "whisper_cpu_compute_type": "int8",
+    "whisper_beam_size": 1,
+    "whisper_vad": false,
+    "whisper_prompt": true,
+    "whisper_temperature_fallback": true,
+    "parakeet_model": "nemo-parakeet-tdt-0.6b-v3",
+    "parakeet_quantization": "auto",
+    "idle_unload_minutes": 20,
+    "resolved_quantization": "fp32"
+  },
+  "environment": {
+    "python": "3.13.3",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "cpu": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+    "gpu": "NVIDIA GeForce RTX 3050",
+    "gpu_total_mb": 8192,
+    "git_commit": "7128e33",
+    "git_dirty": true,
+    "versions": {
+      "ctranslate2": "4.7.1",
+      "faster_whisper": "1.2.1",
+      "onnxruntime": "1.23.2",
+      "onnx_asr": "0.12.0",
+      "numpy": "2.3.5"
+    },
+    "timestamp": "2026-10-04T18:48:23"
+  },
+  "accuracy": {
+    "wer": 0.3488372093023256,
+    "cer": 0.11295190604291057,
+    "cer_no_accents": 0.10822780657437175,
+    "wer_formatted": 0.3701760959160734
+  },
+  "accuracy_ci95": {
+    "wer": [
+      0.3280519553881038,
+      0.3698837225547276
+    ],
+    "cer": [
+      0.09952831749749486,
+      0.1285111658725945
+    ],
+    "cer_no_accents": [
+      0.09525490219176608,
+      0.12342107206827224
+    ],
+    "wer_formatted": [
+      0.34944879047997596,
+      0.39062175550943085
+    ]
+  },
+  "language_id_accuracy": {
+    "el": 0.98
+  },
+  "latency_ms": {
+    "n": 200,
+    "mean": 164.24702799987244,
+    "sd": 37.42478418118493,
+    "min": 113.1000999994285,
+    "p50": 157.88830000019516,
+    "p90": 199.9803200013048,
+    "p95": 224.89145499939693,
+    "p99": 307.5046350005863,
+    "max": 408.0764000009367
+  },
+  "rtf": {
+    "n": 200,
+    "mean": 0.015857499268679458,
+    "sd": 0.003383732283130115,
+    "min": 0.010557605485255906,
+    "p50": 0.0153308987302933,
+    "p90": 0.019381892686372842,
+    "p95": 0.02075635432038844,
+    "p99": 0.02304198215807332,
+    "max": 0.046318383458566315
+  },
+  "load_seconds": 3.16,
+  "first_inference_ms": 252.6,
+  "gpu_contention": {
+    "util_between_inferences_mean": 50.3,
+    "warning": "latency not representative"
+  },
+  "vram_mb": {
+    "before_load": 912,
+    "after_load": 3667,
+    "peak_sampled": 4201,
+    "model_delta": 2755
+  }
+}

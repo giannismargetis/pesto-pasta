@@ -33,6 +33,9 @@ _IGNORED_TITLES = {"Program Manager", "Windows Input Experience", "Microsoft Tex
 user32.GetWindowLongPtrW.restype = ctypes.c_ssize_t
 user32.GetWindow.restype = wintypes.HWND
 user32.GetForegroundWindow.restype = wintypes.HWND
+kernel32.OpenProcess.restype = wintypes.HANDLE
+kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
 
 
 @dataclass(frozen=True)

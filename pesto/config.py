@@ -38,12 +38,13 @@ class AsrSettings:
     whisper_model: str = "large-v3-turbo"
     whisper_compute_type: str = "int8_float16"
     whisper_cpu_compute_type: str = "int8"
-    whisper_beam_size: int = 1
+    whisper_beam_size: int = 2  # beam 2: -0.8 pp Greek WER vs beam 1 for +11-24 ms (docs/ENGINEERING_LOG.md)
     whisper_vad: bool = False
     whisper_prompt: bool = True
     whisper_temperature_fallback: bool = True
     parakeet_model: str = "nemo-parakeet-tdt-0.6b-v3"
-    parakeet_quantization: str = "int8"  # "int8" or "" (full precision)
+    # auto = fp32 on CUDA (int8 kernels are slow on the CUDA provider), int8 on CPU; or "int8" / "fp32"
+    parakeet_quantization: str = "auto"
     idle_unload_minutes: int = 20
 
 

@@ -102,7 +102,9 @@ class CurrentAdapter(Adapter):
         from dataclasses import asdict
 
         return {"impl": "current", "language_mode": self.language_mode, **asdict(self.settings),
-                "device": self.engine.device}
+                "device": self.engine.device,
+                "resolved_quantization": getattr(self.engine, "quantization", None)
+                or getattr(self.engine, "compute_type", None)}
 
 
 # --------------------------------------------------------------------------- harness
@@ -166,6 +168,10 @@ def run(adapter: Adapter, manifest: Path, tag: str, limit: int | None) -> dict:
             text, detected = adapter.transcribe(audio, item["lang"])
             ms = (time.perf_counter() - t0) * 1000.0
             if i % 10 == 0:
+                # NVML utilisation is averaged over the last sampling period, so
+                # sample after a short idle gap: otherwise it measures our own
+                # inference instead of other processes' load.
+                time.sleep(0.3)
                 snap = gpu.snapshot()
                 peak_mb = max(peak_mb, snap.used_mb)
                 util_samples.append(snap.util_pct)

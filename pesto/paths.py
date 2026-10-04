@@ -10,7 +10,26 @@ Resolution order for the data home:
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+# CTranslate2 (and onnx-asr) import PyTorch *opportunistically* when it is
+# installed — only model-conversion code uses it. In a shared environment that
+# costs ~2 s of start-up and hundreds of MB of RAM for nothing; neither runtime
+# needs it for inference. Marking the module absent makes those optional
+# imports fail fast. Set PESTO_ALLOW_TORCH=1 to opt out. (A meta-path finder,
+# not a ``sys.modules["torch"] = None`` placeholder: SciPy inspects
+# sys.modules for array libraries and would crash on the placeholder.)
+class _BlockTorch:
+    @staticmethod
+    def find_spec(name, path=None, target=None):
+        if name == "torch" or name.startswith("torch."):
+            raise ModuleNotFoundError("torch is intentionally not loaded by PESTO", name=name)
+        return None
+
+
+if not os.environ.get("PESTO_ALLOW_TORCH") and "torch" not in sys.modules:
+    sys.meta_path.insert(0, _BlockTorch())
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
 

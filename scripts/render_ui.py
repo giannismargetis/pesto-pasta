@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
-from pesto.events import Level, Phase, Preview, Status  # noqa: E402
+from pesto.events import Phase, Preview, Status  # noqa: E402
 from pesto.ui import theme  # noqa: E402
 from pesto.ui.hud import Hud  # noqa: E402
 

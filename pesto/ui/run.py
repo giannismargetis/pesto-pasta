@@ -54,7 +54,7 @@ def run_gui(app: PestoApp, product: str = "PESTO", subtitle: str = "", show_dash
     bridge.status.connect(dashboard.on_status)
     bridge.settings.connect(dashboard.on_settings)
 
-    ui = {"qapp": qapp, "bridge": bridge, "dashboard": dashboard, "hud": hud, "tray": tray}
+    ui = {"app": app, "qapp": qapp, "bridge": bridge, "dashboard": dashboard, "hud": hud, "tray": tray}
     for hook in ui_hooks or []:
         hook(ui)
 

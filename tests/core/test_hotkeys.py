@@ -95,3 +95,25 @@ def test_other_keys_while_idle_are_ignored():
         ptt.on_key(key(vk))
         ptt.on_key(key(vk, False))
     assert ev == []
+
+
+def test_modal_capture_swallows_only_while_active():
+    from pesto.hotkeys import Hotkeys
+
+    got = []
+    hk = Hotkeys("right ctrl", "esc", 50, lambda n, t: got.append(n))
+    hk.hook = None
+    hk._dispatcher.start()
+    answers = []
+    ENTER = 0x0D
+    assert hk._on_event(key(ENTER)) is False  # not captured: reaches the app
+    hk.capture(["enter", "esc"], answers.append)
+    assert hk._on_event(key(ENTER)) is True  # swallowed
+    assert hk._on_event(key(ENTER, False)) is True
+    hk.release()
+    assert hk._on_event(key(ENTER)) is False
+    deadline = time.time() + 1
+    while not answers and time.time() < deadline:
+        time.sleep(0.01)
+    hk.stop()
+    assert answers == [ENTER]

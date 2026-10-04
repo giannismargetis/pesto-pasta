@@ -1,0 +1,41 @@
+# English stimulus phrases (original, written for this study; academic register, 7–13 words).
+# One phrase per line. Do not edit after data collection starts: trials reference them by text.
+The study compares speech and keyboard input for writing text.
+Participants completed three sessions on different days.
+System delay changes how fast the interaction feels.
+The laboratory is on the second floor of the engineering building.
+Please send me the lecture notes before Friday afternoon.
+The results are presented in detail in the fourth chapter.
+The supervisor approved the experimental protocol last week.
+Speech recognition works without an internet connection.
+Each participant filled in the questionnaire after every condition.
+Transcription accuracy was measured with the word error rate.
+The text appears as soon as you release the key.
+The exam period starts at the beginning of June.
+The presentation slides were uploaded to the course platform.
+Cognitive load was assessed with the NASA-TLX questionnaire.
+The university library stays open until nine in the evening.
+Users preferred dictation for longer messages.
+The statistical analysis used non-parametric tests.
+The experiment took place in a quiet room with stable lighting.
+We need more participants before we can generalize the findings.
+The interface shows when the system is listening and when it is working.
+Punctuation and capitalization matter in written English.
+The human computer interaction course is taught in the eighth semester.
+The application records the time from the end of speech to the text.
+We asked participants to correct any errors they noticed.
+The meeting with the research group was moved to Wednesday.
+Most students bring a laptop to the lectures.
+The paper was published at an international usability conference.
+After the break we continued with the second condition.
+Voice input can help people with motor impairments.
+Instructions were given orally and in writing before each session.
+Average writing speed was computed in words per minute.
+The sample consisted of undergraduate students of the department.
+The assignment must be submitted electronically through the platform.
+Background noise can reduce recognition accuracy.
+Participants took a short break at the end of each block.
+The pilot study revealed problems in the instructions.
+Each sentence stays on screen until you press the next button.
+Written consent was obtained from all participants before the start.
+All data are stored locally and never shared with third parties.

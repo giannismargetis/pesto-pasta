@@ -7,7 +7,7 @@ import json
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QActionGroup
 from PySide6.QtWidgets import (
-    QCheckBox, QComboBox, QFormLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QTableWidget, QTableWidgetItem,
+    QCheckBox, QComboBox, QFormLayout, QHBoxLayout, QHeaderView, QLineEdit, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget,
 )
 
@@ -21,7 +21,7 @@ STATUS_LABEL = {"completed": "✓ completed", "failed": "✗ failed", "cancelled
 
 def install(ext: PastaExtension):
     def hook(ui: dict) -> None:
-        app = ext.app
+        app = ui["app"]  # hooks run before app.start(), i.e. before ext.attach()
         tray = ui["tray"]
         menu = tray.add_menu("Mode")
         group = QActionGroup(menu)
@@ -43,7 +43,7 @@ def install(ext: PastaExtension):
                                            dash.nav.item(i).text() == "Commands" else None)
         ui["bridge"].status.connect(lambda st: QTimer.singleShot(400, page.reload)
                                     if st.data.get("command") and page.isVisible() else None)
-        widget, saver = settings_card(app)
+        widget, saver = settings_card(app, ext)
         dash.settings_page.add_section(widget, saver)
     return hook
 
@@ -96,7 +96,7 @@ class CommandsPage(QWidget):
                 self.table.setItem(i, j, item)
 
 
-def settings_card(app):
+def settings_card(app, ext):
     c, cl = card()
     cl.addWidget(label("Commands (PASTA)", "h2"))
     cl.addWidget(label("In the default mode you dictate normally and address PASTA by name: “Pasta, open Chrome”. "
@@ -138,6 +138,9 @@ def settings_card(app):
         cfg.agent.mode = mode.currentData()
         app.session.mode_label = cfg.agent.mode
         cfg.agent.wake_words = [w.strip() for w in wake.text().split(",") if w.strip()]
+        from .router import Router
+
+        ext.router = Router(cfg.agent.wake_words)  # takes effect immediately
         cfg.agent.llm_enabled = llm_on.isChecked()
         cfg.agent.llm_model = llm_model.text().strip()
         for key, cb in perms.items():
@@ -146,5 +149,3 @@ def settings_card(app):
 
     return c, save
 
-
-__all__ = ["install", "QLabel"]

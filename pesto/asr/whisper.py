@@ -73,6 +73,9 @@ class WhisperEngine(Engine):
                 return
             from faster_whisper import WhisperModel
 
+            from ..cuda import register_cuda_libraries
+
+            register_cuda_libraries()
             repo = WHISPER_REPOS.get(self.s.whisper_model, self.s.whisper_model)
             path = str(resolve_snapshot(repo))
             want_cuda = self.s.device in ("auto", "cuda") and _cuda_device_count() > 0
@@ -85,14 +88,18 @@ class WhisperEngine(Engine):
                         path, device=device, compute_type=compute, cpu_threads=0 if device == "cuda" else 4, num_workers=1
                     )
                     self.device, self.compute_type = device, compute
+                    # A CUDA model can construct fine and only fail at the first
+                    # encode (e.g. cuBLAS missing), so the warm-up is part of the
+                    # attempt. It also primes kernels for the first real utterance.
+                    self._decode_locked(np.zeros(16000, dtype=np.float32), "en", True)
                     break
                 except Exception as exc:  # e.g. missing CUDA libs -> CPU
+                    self._model = None
                     last_exc = exc
-                    log.warning("Whisper load on %s/%s failed: %s", device, compute, exc)
+                    log.warning("Whisper on %s/%s unavailable (%s)%s", device, compute, exc,
+                                "; falling back to CPU" if device == "cuda" else "")
             if self._model is None:
                 raise RuntimeError(f"Whisper could not be loaded: {last_exc}")
-        # Prime CUDA kernels so the first real utterance is not the slow one.
-        self.transcribe(np.zeros(16000, dtype=np.float32), language="en", _skip_gate=True)
         log.info("Whisper %s ready on %s (%s)", self.s.whisper_model, self.device, self.compute_type)
 
     def unload(self) -> None:
@@ -125,53 +132,57 @@ class WhisperEngine(Engine):
         total = sum(scored.values()) or 1.0
         return best, scored[best] / total
 
-    def transcribe(self, audio, language=None, *, preview=False, _skip_gate=False) -> Transcript:
+    def transcribe(self, audio, language=None, *, preview=False) -> Transcript:
+        with self._lock:
+            return self._decode_locked(audio, language, preview)
+
+    def _decode_locked(self, audio, language, preview) -> Transcript:
         from faster_whisper.audio import pad_or_trim
         from faster_whisper.tokenizer import Tokenizer
 
         timings: dict[str, float] = {}
         t0 = time.perf_counter()
-        with self._lock:
-            model = self._model
-            if model is None or audio.size == 0:
-                return Transcript("", no_speech=True)
-            audio = np.ascontiguousarray(audio, dtype=np.float32)
-            if self.s.whisper_vad and not preview and not _skip_gate:
-                from faster_whisper.vad import VadOptions, collect_chunks, get_speech_timestamps
+        # Caller holds self._lock.
+        model = self._model
+        if model is None or audio.size == 0:
+            return Transcript("", no_speech=True)
+        audio = np.ascontiguousarray(audio, dtype=np.float32)
+        if self.s.whisper_vad and not preview:
+            from faster_whisper.vad import VadOptions, collect_chunks, get_speech_timestamps
 
-                chunks = get_speech_timestamps(audio, VadOptions(min_silence_duration_ms=400, speech_pad_ms=200))
-                if not chunks:
-                    return Transcript("", no_speech=True, timings_ms={"vad": (time.perf_counter() - t0) * 1e3})
-                audio = np.concatenate(collect_chunks(audio, chunks)[0])
-                timings["vad"] = (time.perf_counter() - t0) * 1e3
+            chunks = get_speech_timestamps(audio, VadOptions(min_silence_duration_ms=400, speech_pad_ms=200))
+            if not chunks:
+                return Transcript("", no_speech=True, timings_ms={"vad": (time.perf_counter() - t0) * 1e3})
+            audio = np.concatenate(collect_chunks(audio, chunks)[0])
+            timings["vad"] = (time.perf_counter() - t0) * 1e3
 
-            t = time.perf_counter()
-            features = model.feature_extractor(audio)
-            content_frames = features.shape[-1] - 1
-            first = pad_or_trim(features[:, : min(model.feature_extractor.nb_max_frames, content_frames)])
-            timings["features"] = (time.perf_counter() - t) * 1e3
+        t = time.perf_counter()
+        features = model.feature_extractor(audio)
+        content_frames = features.shape[-1] - 1
+        first = pad_or_trim(features[:, : min(model.feature_extractor.nb_max_frames, content_frames)])
+        timings["features"] = (time.perf_counter() - t) * 1e3
 
-            t = time.perf_counter()
-            encoder_output = model.encode(first)
-            timings["encode"] = (time.perf_counter() - t) * 1e3
+        t = time.perf_counter()
+        encoder_output = model.encode(first)
+        timings["encode"] = (time.perf_counter() - t) * 1e3
 
-            t = time.perf_counter()
-            if language:
-                lang, lang_prob = language, 1.0
-            else:
-                lang, lang_prob = self._choose_language(model, encoder_output)
-            timings["langid"] = (time.perf_counter() - t) * 1e3
+        t = time.perf_counter()
+        if language:
+            lang, lang_prob = language, 1.0
+        else:
+            lang, lang_prob = self._choose_language(model, encoder_output)
+        timings["langid"] = (time.perf_counter() - t) * 1e3
 
-            t = time.perf_counter()
-            tokenizer = Tokenizer(model.hf_tokenizer, model.model.is_multilingual, task="transcribe", language=lang)
-            prompt = PROMPTS.get(lang) if self.s.whisper_prompt else None
-            options = self._options(tokenizer, preview, prompt)
-            parts = []
-            for seg in model.generate_segments(features, tokenizer, options, False, encoder_output):
-                text = seg.text.strip()
-                if text:
-                    parts.append(text)
-            timings["decode"] = (time.perf_counter() - t) * 1e3
+        t = time.perf_counter()
+        tokenizer = Tokenizer(model.hf_tokenizer, model.model.is_multilingual, task="transcribe", language=lang)
+        prompt = PROMPTS.get(lang) if self.s.whisper_prompt else None
+        options = self._options(tokenizer, preview, prompt)
+        parts = []
+        for seg in model.generate_segments(features, tokenizer, options, False, encoder_output):
+            text = seg.text.strip()
+            if text:
+                parts.append(text)
+        timings["decode"] = (time.perf_counter() - t) * 1e3
 
         text = " ".join(parts).strip()
         if text and _normalized(text) in HALLUCINATIONS and audio.size < 16000 * 3:
