@@ -65,6 +65,15 @@ means: one `web_search(query, site=youtube, browser=chrome)` step. Each step is 
 right before it runs. A clause the grammar cannot parse rejects the whole utterance —
 PASTA never runs half a request.
 
+## LLM fallback (spot check)
+
+With `qwen3.5:9b-q4_K_M` via Ollama on the RTX 3050: "could you crank the volume all the
+way up to eighty" → `volume(set, 80)` (confirmation-gated); "what is the weather tomorrow"
+→ correctly rejected; "βγάλε μου στην οθόνη το Discord" → not understood. First call
+53.6 s (model load), then ~2.3 s. The model needs ~6.6 GB VRAM, so it is off by default
+(`agent.llm_enabled`); a smaller model is advisable alongside Whisper. Not evaluated
+systematically.
+
 ## Known limitations
 
 * Live execution success (as opposed to understanding) has not yet been measured
