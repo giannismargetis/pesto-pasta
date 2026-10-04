@@ -3,57 +3,38 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pasta-v2"
-version = "2.0.0"
-description = "PASTA V2 — Fast local bilingual push-to-talk voice typer & real-time computer control for Windows"
+name = "pesto-pasta"
+version = "3.0.0.dev0"
+description = "PESTO: local Greek/English push-to-talk speech input for Windows. PASTA: voice commands on top of it."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
-keywords = ["speech-to-text", "voice-control", "computer-use", "decider-2b", "whisper", "parakeet", "automation", "pasta", "pesto"]
 dependencies = [
     "numpy>=1.24",
     "sounddevice>=0.4.6",
-    "keyboard>=0.13.5",
-    "pyperclip>=1.8.2",
-    "pystray>=0.19.4",
-    "Pillow>=10.0.0",
-    "colorama>=0.4.6",
     "faster-whisper>=1.2.0",
-    "onnx-asr[cpu,hub]>=0.7.0",
-    "psutil>=5.9.0",
-    "pywin32>=306",
-    "pywinauto>=0.6.8",
-    "uiautomation>=2.0.18",
-    "playwright>=1.40.0",
-    "decider-ai>=1.8.0",
+    "ctranslate2>=4.5",
+    "onnx-asr[hub]>=0.10",
+    "onnxruntime-gpu>=1.20; platform_system == 'Windows'",
+    "huggingface_hub>=0.25",
+    "PySide6-Essentials>=6.8",
 ]
 
 [project.optional-dependencies]
-test = [
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
-]
-gpu = [
-    "onnxruntime-gpu>=1.18",
-]
+pasta = ["comtypes>=1.2", "uiautomation>=2.0.18"]
+research = ["scipy>=1.11", "matplotlib>=3.8"]
+dev = ["pytest>=8", "ruff>=0.5"]
 
 [project.scripts]
+pesto = "pesto.cli:main"
 pasta = "pasta.cli:main"
-pesto = "pasta.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["pasta*"]
+include = ["pesto*", "pasta*", "research*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
 
 [tool.ruff]
-line-length = 110
-target-version = "py310"
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B"]
-ignore = ["E501"]
+line-length = 120
+target-version = "py311"

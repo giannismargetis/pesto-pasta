@@ -1,0 +1,4616 @@
+{
+  "table": {
+    "ALL": {
+      "n": 201,
+      "route_acc": 0.9950248756218906,
+      "exact_acc": 0.9950248756218906,
+      "action_acc": 0.9950248756218906,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.006024096385542169
+    },
+    "dev": {
+      "n": 25,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.0
+    },
+    "dev:el": {
+      "n": 14,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.0
+    },
+    "dev:en": {
+      "n": 11,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "dictation": {
+      "n": 30,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": null
+    },
+    "dictation:el": {
+      "n": 15,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": null
+    },
+    "dictation:en": {
+      "n": 15,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": null
+    },
+    "heldout": {
+      "n": 80,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "heldout:el": {
+      "n": 40,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "heldout:en": {
+      "n": 40,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "heldout_oos": {
+      "n": 10,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "heldout_oos:el": {
+      "n": 5,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "heldout_oos:en": {
+      "n": 5,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": null,
+      "missed_command_rate": 0.0
+    },
+    "legacy": {
+      "n": 56,
+      "route_acc": 0.9821428571428571,
+      "exact_acc": 0.9821428571428571,
+      "action_acc": 0.9821428571428571,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.019230769230769232
+    },
+    "legacy:el": {
+      "n": 10,
+      "route_acc": 1.0,
+      "exact_acc": 1.0,
+      "action_acc": 1.0,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.0
+    },
+    "legacy:en": {
+      "n": 46,
+      "route_acc": 0.9782608695652174,
+      "exact_acc": 0.9782608695652174,
+      "action_acc": 0.9782608695652174,
+      "false_command_rate": 0.0,
+      "missed_command_rate": 0.022727272727272728
+    }
+  },
+  "latency_ms": {
+    "p50": 0.07259999983943999,
+    "p95": 0.26949999937642133,
+    "max": 1.114699999561708
+  },
+  "errors": [
+    {
+      "id": "leg-08",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Computer, switch to Chrome.",
+      "expected_route": "command",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.22009999975125538,
+      "route_ok": false,
+      "exact": false,
+      "action": false
+    }
+  ],
+  "rows": [
+    {
+      "id": "leg-01",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open Calculator.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Calculator"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 1.114699999561708,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-02",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open Notepad.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Notepad"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0915000000532018,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-03",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open VS Code.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "VS Code"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07129999994504033,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-04",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, switch to VS Code.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "VS Code"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07210000057966681,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-05",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, minimize active window.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "minimize",
+          "args": {
+            "target": "active"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07230000028357608,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-06",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, what is currently open?",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "list_windows",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.050800000281014945,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-07",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open Chrome.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06289999964792514,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-08",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Computer, switch to Chrome.",
+      "expected_route": "command",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.22009999975125538,
+      "route_ok": false,
+      "exact": false,
+      "action": false
+    },
+    {
+      "id": "leg-09",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open calc.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "calc"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06919999941601418,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-10",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, launch notepad.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "notepad"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07160000041039893,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-11",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, search for RTX 5090 prices.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "RTX 5090 prices",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.13469999976223335,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-12",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open github.com.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "github.com"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07540000024164328,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-13",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open python.org.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "python.org"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09179999960906571,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-14",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, create a new browser tab.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "new_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.2610000001368462,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-15",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, close this tab.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "close_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.11160000030940864,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-16",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, go back.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "back"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06780000057915458,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-17",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, search for Python documentation.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "Python documentation",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09860000045591732,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-18",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open google.com.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "google.com"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05809999947814504,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-19",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, search for local weather.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "local weather",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05990000045130728,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-20",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, new tab.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "new_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.036499999623629265,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-21",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open huggingface.co.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "huggingface.co"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05069999951956561,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-22",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, search for PyTorch installation.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "PyTorch installation",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05990000045130728,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-23",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, press Enter.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "enter"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.2077999997709412,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-24",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, copy this.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "copy"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05290000081004109,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-25",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, paste it here.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "paste"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05239999973127851,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-26",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, type hello world.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "type_text",
+          "args": {
+            "text": "hello world"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.1264000002265675,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-27",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, scroll down.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "down",
+            "amount": "page"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05830000009154901,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-28",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, scroll up.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "up",
+            "amount": "page"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.048799999603943434,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-29",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, type good morning.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "type_text",
+          "args": {
+            "text": "good morning"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04929999977321131,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-30",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, copy selection.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "copy"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04189999981463188,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-31",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, paste.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "paste"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0351999997292296,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-32",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, press enter key.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "enter"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.059699999837903306,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-33",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open Downloads.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "downloads"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.049700000090524554,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-34",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, find my PDF named diploma.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "diploma"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.1370999998471234,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-35",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open my Downloads folder.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "downloads"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06029999985912582,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-36",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, find file thesis.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "thesis"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.060399999711080454,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-37",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, open Downloads directory.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "downloads"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.051900000471505336,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-38",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, find notes.txt.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "notes.txt"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05529999998543644,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-39",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, run git status in the terminal.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "git status"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.19049999991693767,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-40",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, mute my computer.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "mute"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.048099999730766285,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-41",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, mute sound.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "mute"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.040500000068277586,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-42",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, run python --version.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "python --version"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07249999998748535,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-43",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, run git status.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "git status"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05309999960445566,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-44",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Pasta, stop.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "stop",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.029400000130408444,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-45",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το Chrome.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09540000064589549,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-46",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, ψάξε RTX 5090 τιμές.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "RTX 5090 τιμές",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07379999988188501,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-47",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το Calculator.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Calculator"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07299999924725853,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-48",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, πήγαινε στα Downloads.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "downloads"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06119999943621224,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-49",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, βρες το PDF μου.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "μου"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0698000003467314,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-50",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, γύρνα πίσω.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "back"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06140000004961621,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-51",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, πάτα Enter.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "enter"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.08859999979904387,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-52",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Πάστα, κάνε paste.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "paste"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09869999939837726,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-53",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Καλησπέρα, αύριο θα σου στείλω το αρχείο με την παρουσίαση.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.3555000002961606,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-54",
+      "split": "legacy",
+      "lang": "en",
+      "text": "The project deadline has been moved to next Tuesday afternoon.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.019300000531075057,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-55",
+      "split": "legacy",
+      "lang": "en",
+      "text": "Please review the attached invoice and let me know if everything is accurate.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.15799999982846202,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "leg-56",
+      "split": "legacy",
+      "lang": "el",
+      "text": "Ευχαριστώ πολύ για τη βοήθεια, τα λέμε αύριο στο γραφείο.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.1903000002130284,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-01",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το YouTube και ψάξε χριστουγεννιάτικα τραγούδια.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "χριστουγεννιάτικα τραγούδια",
+            "site": "youtube"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.1542999998491723,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-02",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το Chrome, μπες στο YouTube και παίξε ένα πασχαλινό τραγούδι.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "ένα πασχαλινό τραγούδι",
+            "site": "youtube",
+            "browser": "chrome"
+          },
+          "confidence": 0.85,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.21459999970829813,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-03",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, κάνε focus στο GitHub.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "GitHub"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07759999971312936,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-04",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, κάνε save το notepad.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "notepad"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        },
+        {
+          "action": "edit",
+          "args": {
+            "op": "save"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.08230000003095483,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-05",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, open Chrome and search for RTX 5090 prices.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "RTX 5090 prices",
+            "site": "web",
+            "browser": "chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.11700000050041126,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-06",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, search for salt and pepper.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "salt and pepper",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06329999996523838,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-07",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, go to github dot com.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "github.com"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05560000045079505,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-08",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, press control shift t.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "ctrl+shift+t"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06909999956405954,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-09",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, πάτα το κουμπί Αποθήκευση.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "click",
+          "args": {
+            "label": "Αποθήκευση"
+          },
+          "confidence": 0.9,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09810000028664945,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-10",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, set the volume to 30 percent.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "set",
+            "level": 30
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06000000030326191,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-11",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, βάλε την ένταση στο 20.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "set",
+            "level": 20
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06089999988034833,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-12",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, σίγαση.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "mute"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.03699999979289714,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-13",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, minimize Spotify.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "minimize",
+          "args": {
+            "target": "Spotify"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0777000004745787,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-14",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, close this window.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "close",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06289999964792514,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-15",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, κλείσε την καρτέλα.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "close_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05230000078881858,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-16",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, γράψε καλημέρα σε όλους.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "type_text",
+          "args": {
+            "text": "καλημέρα σε όλους"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06550000034621917,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-17",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, βρες το αρχείο thesis.pdf.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "thesis.pdf"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0749000000723754,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-18",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, τι είναι ανοιχτό;",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "list_windows",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05289999990054639,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-19",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε τις λήψεις.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "downloads"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06279999979597051,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-20",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, scroll down a lot.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "down",
+            "amount": "large"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06089999988034833,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-21",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, where is Patras on the map?",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "Patras",
+            "site": "maps"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06340000072668772,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-22",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, open github.com in Edge.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "github.com",
+            "browser": "msedge"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07370000002993038,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-23",
+      "split": "dev",
+      "lang": "en",
+      "text": "Pasta, run del /s c:",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "del /s c"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06369999937305693,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-24",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα, κάνε κλικ στο Sign in.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "click",
+          "args": {
+            "label": "Sign in"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.08269999943877338,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dev-25",
+      "split": "dev",
+      "lang": "el",
+      "text": "Πάστα με κιμά και σάλτσα ντομάτας για βραδινό.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.10409999958937988,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-01",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, could you open Discord for me?",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Discord"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07860000005166512,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-02",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, bring up Steam.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Steam"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.061300000197661575,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-03",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, start the calculator please.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "calculator"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07219999952212675,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-04",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Jarvis, go to Discord.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "Discord"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.12419999984558672,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-05",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, jump back to Visual Studio Code.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "Visual Studio Code"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07099999947968172,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-06",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, quit Notepad.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "close",
+          "args": {
+            "target": "Notepad"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05580000015470432,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-07",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, make this window full screen.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "maximize",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05809999947814504,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-08",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, hide everything and show me the desktop.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "show_desktop",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07019999975454994,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-09",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, google how to cite a thesis in APA.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "how to cite a thesis in APA",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0718000001143082,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-10",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, look up the weather in Patras.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "the weather in Patras",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06279999979597051,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-11",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, play lo-fi beats on YouTube.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "lo-fi beats",
+            "site": "youtube"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05920000057813013,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-12",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, search Wikipedia for Alan Turing.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "Alan Turing",
+            "site": "wikipedia"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05830000009154901,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-13",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, visit stackoverflow.com.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "stackoverflow.com"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05220000002736924,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-14",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, open a new tab.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "new_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04369999987829942,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-15",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, refresh the page.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "reload"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04470000021683518,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-16",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, go to the next tab.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "next_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04640000042854808,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-17",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, go forward.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "forward"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0380000001314329,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-18",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, hit escape.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "esc"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05540000074688578,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-19",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, press control s.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "ctrl+s"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.061699999605480116,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-20",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, save the file.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "save"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04890000036539277,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-21",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, undo that.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "undo"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04170000011072261,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-22",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, select everything and copy it.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "select_all"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        },
+        {
+          "action": "edit",
+          "args": {
+            "op": "copy"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07619999996677507,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-23",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, write Dear Professor Papadopoulos.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "type_text",
+          "args": {
+            "text": "Dear Professor Papadopoulos"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06759999996575061,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-24",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, turn the volume down.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "down"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.05019999935029773,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-25",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, louder.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "up"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.03280000055383425,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-26",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, unmute.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "unmute"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.03199999991920777,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-27",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, pause the music.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "media",
+          "args": {
+            "op": "play_pause"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.049199999921256676,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-28",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, skip this song.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "media",
+          "args": {
+            "op": "next"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04540000009001233,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-29",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, open my documents.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "documents"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07219999952212675,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-30",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, find the file called budget.xlsx.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "budget.xlsx"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09219999992637895,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-31",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, click Sign in.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "click",
+          "args": {
+            "label": "Sign in"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06570000005012844,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-32",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, press the submit button.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "click",
+          "args": {
+            "label": "submit"
+          },
+          "confidence": 0.9,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.10109999948326731,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-33",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, run git log.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "git log"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0698000003467314,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-34",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, what windows are open?",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "list_windows",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.045199999476608355,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-35",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, never mind.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "stop",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.03529999958118424,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-36",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, open Spotify and then turn the volume up.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Spotify"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        },
+        {
+          "action": "volume",
+          "args": {
+            "op": "up"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.11580000045796623,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-37",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, open Notepad and type meeting notes.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Notepad"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        },
+        {
+          "action": "type_text",
+          "args": {
+            "text": "meeting notes"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.1036000003296067,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-38",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, restore the window.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "restore",
+          "args": {
+            "target": "window"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06120000034570694,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-39",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, page down.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "down",
+            "amount": "page"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.04889999945589807,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-40",
+      "split": "heldout",
+      "lang": "en",
+      "text": "Pasta, show me directions to the University of Patras.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "the University of Patras",
+            "site": "maps"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0718000001143082,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-41",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξέ μου το Discord.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Discord"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09669999963080045,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-42",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, μπορείς να ανοίξεις το Steam;",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Steam"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.08830000024317997,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-43",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, ξεκίνα το Visual Studio Code.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Visual Studio Code"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.08019999950192869,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-44",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, πήγαινε στο Discord.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "Discord"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0703999994584592,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-45",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Τζάρβις, γύρνα στο Chrome.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "focus",
+          "args": {
+            "target": "Chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.20190000032016542,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-46",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, κλείσε το Σημειωματάριο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "close",
+          "args": {
+            "target": "Σημειωματάριο"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0774000000092201,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-47",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, ελαχιστοποίησε το παράθυρο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "minimize",
+          "args": {
+            "target": "παράθυρο"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07389999973383965,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-48",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, μεγιστοποίησε το Chrome.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "maximize",
+          "args": {
+            "target": "Chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06920000032550888,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-49",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, δείξε μου την επιφάνεια εργασίας.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "show_desktop",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07139999979699496,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-50",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, ψάξε στο Google πώς γράφω βιβλιογραφία.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "πώς γράφω βιβλιογραφία",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09500000032858225,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-51",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, αναζήτησε συνταγές για μουσακά.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "συνταγές για μουσακά",
+            "site": "web"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.10860000020329608,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-52",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, βάλε στο YouTube Χατζιδάκι.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "Χατζιδάκι",
+            "site": "youtube"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.3797999997914303,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-53",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, παίξε Θεοδωράκη στο YouTube.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "Θεοδωράκη",
+            "site": "youtube"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.12430000060703605,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-54",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το eclass.upatras.gr.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "eclass.upatras.gr"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0976999999693362,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-55",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε νέα καρτέλα.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "new_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07260000074893469,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-56",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, ανανέωσε τη σελίδα.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "reload"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07329999971261714,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-57",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, πήγαινε πίσω.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "back"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.061300000197661575,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-58",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, πάτα Escape.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "press",
+          "args": {
+            "keys": "esc"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.10380000003351597,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-59",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, αντέγραψέ το.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "copy"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07330000062211184,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-60",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, επικόλλησε.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "paste"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06140000004961621,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-61",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, αναίρεση.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "undo"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.061499999901570845,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-62",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, αποθήκευσε.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "edit",
+          "args": {
+            "op": "save"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06339999981719302,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-63",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, γράψε Αξιότιμε κύριε καθηγητά.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "type_text",
+          "args": {
+            "text": "Αξιότιμε κύριε καθηγητά"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.09250000039173756,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-64",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, χαμήλωσε την ένταση.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "down"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06970000049477676,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-65",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, δυνάμωσε τον ήχο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "up"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.06819999998697313,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-66",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, κλείσε τον ήχο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "volume",
+          "args": {
+            "op": "mute"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07259999983943999,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-67",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, επόμενο τραγούδι.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "media",
+          "args": {
+            "op": "next"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07110000024113106,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-68",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, παύση.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "media",
+          "args": {
+            "op": "play_pause"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.058200000239594374,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-69",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε τα έγγραφα.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_folder",
+          "args": {
+            "folder": "documents"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.10960000054183183,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-70",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, βρες μου το αρχείο διπλωματική.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "find_file",
+          "args": {
+            "query": "διπλωματική"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.15660000008210773,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-71",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, κάνε κλικ στο Υποβολή.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "click",
+          "args": {
+            "label": "Υποβολή"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.12460000016289996,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-72",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, τρέξε git status.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "run_command",
+          "args": {
+            "command": "git status"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07670000013604295,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-73",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, ποια παράθυρα είναι ανοιχτά;",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "list_windows",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.07359999926848104,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-74",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άκυρο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "stop",
+          "args": {},
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.034499999856052455,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-75",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το Σημειωματάριο και γράψε σημειώσεις συνάντησης.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open",
+          "args": {
+            "target": "Σημειωματάριο"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        },
+        {
+          "action": "type_text",
+          "args": {
+            "text": "σημειώσεις συνάντησης"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.18460000046616187,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-76",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, άνοιξε το Chrome και πήγαινε στο github.com.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "open_url",
+          "args": {
+            "url": "github.com",
+            "browser": "chrome"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.2001999991989578,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-77",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, σκρόλαρε κάτω.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "down",
+            "amount": "page"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.10509999992791563,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-78",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, κατέβα λίγο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "scroll",
+          "args": {
+            "direction": "down",
+            "amount": "page"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.0973999995039776,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-79",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, επόμενη καρτέλα.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "browser",
+          "args": {
+            "op": "next_tab"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.068700000156241,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "ho-80",
+      "split": "heldout",
+      "lang": "el",
+      "text": "Πάστα, πού είναι η Πάτρα στον χάρτη;",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "grammar",
+      "intents": [
+        {
+          "action": "web_search",
+          "args": {
+            "query": "η Πάτρα",
+            "site": "maps"
+          },
+          "confidence": 1.0,
+          "source": "grammar"
+        }
+      ],
+      "ms": 0.11200000062672189,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-01",
+      "split": "heldout_oos",
+      "lang": "en",
+      "text": "Pasta, what's the weather going to be like tomorrow?",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.12999999944440788,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-02",
+      "split": "heldout_oos",
+      "lang": "en",
+      "text": "Pasta, send an email to my supervisor.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.10159999965253519,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-03",
+      "split": "heldout_oos",
+      "lang": "en",
+      "text": "Pasta, delete all my downloads.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.06579999990208307,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-04",
+      "split": "heldout_oos",
+      "lang": "en",
+      "text": "Pasta, tell me a joke.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.07720000030531082,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-05",
+      "split": "heldout_oos",
+      "lang": "en",
+      "text": "Pasta, shut down the computer.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.07899999945948366,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-06",
+      "split": "heldout_oos",
+      "lang": "el",
+      "text": "Πάστα, τι ώρα είναι;",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.10480000037205173,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-07",
+      "split": "heldout_oos",
+      "lang": "el",
+      "text": "Πάστα, σβήσε τον φάκελο με τις φωτογραφίες.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.10450000081618782,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-08",
+      "split": "heldout_oos",
+      "lang": "el",
+      "text": "Πάστα, στείλε μήνυμα στη μαμά μου.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.09919999956764514,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-09",
+      "split": "heldout_oos",
+      "lang": "el",
+      "text": "Πάστα, κλείσε τον υπολογιστή.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.06540000049426453,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "oos-10",
+      "split": "heldout_oos",
+      "lang": "el",
+      "text": "Πάστα, πες μου ένα ανέκδοτο.",
+      "expected_route": "command",
+      "route": "command",
+      "route_reason": "wake word + pause",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.0897999998414889,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-01",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Open the report and check whether the figures match the appendix.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2961000000141212,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-02",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Search for related work was conducted in IEEE Xplore and the ACM Digital Library.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.25160000041069,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-03",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Close collaboration with the supervisor is essential for the thesis.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.26949999937642133,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-04",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Type I errors were controlled using the Holm correction.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2297000000908156,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-05",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Press releases from the university were also analysed.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2497000004950678,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-06",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Stop words were removed before computing the similarity.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.35430000025371555,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-07",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Copy editing will be done after the second draft.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2801000000545173,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-08",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Run the analysis again with the corrected data set.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.020700000277429353,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-09",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Pasta is the most popular dish among the participants.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.18499999987398041,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-10",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Jarvis is the assistant in the Iron Man films.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.25069999992410885,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-11",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Minimize the cognitive load by reducing the number of steps.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.30979999974078964,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-12",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Switch to the second condition after the break.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.701400000252761,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-13",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Mute participants could not complete the voice condition.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2480000002833549,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-14",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Go back to the previous section and rewrite the introduction.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.02029999996011611,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-15",
+      "split": "dictation",
+      "lang": "en",
+      "text": "Scroll down to the results to see the latency distribution.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.19720000000233995,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-16",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Άνοιξε το παράθυρο γιατί κάνει ζέστη στην αίθουσα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.25100000038946746,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-17",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Ψάξε λίγο στη βιβλιογραφία για παρόμοιες μελέτες.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.22139999964565504,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-18",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Κλείσε το ραντεβού με τον επιβλέποντα για την Τρίτη.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.22059999992052326,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-19",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Γράψε μου ένα μήνυμα όταν φτάσεις στην Πάτρα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.23489999966841424,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-20",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Πάτα γκάζι γιατί θα αργήσουμε στο μάθημα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2178999993702746,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-21",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Βρες χρόνο να διαβάσεις το τρίτο κεφάλαιο.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.21389999983512098,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-22",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Η πάστα σοκολάτα ήταν πολύ νόστιμη χθες.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.01880000036180718,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-23",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Πάστα φλώρα θα φτιάξουμε για το πάρτι.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.11670000003505265,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-24",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Βάστα λίγο ακόμα, σχεδόν τελειώσαμε.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "wake-word-like start but not a command",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.16659999982948648,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-25",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Σταμάτα να ανησυχείς για την παρουσίαση.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.21980000019539148,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-26",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Πήγαινε στο εργαστήριο και ζήτα τα δεδομένα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.23379999947792385,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-27",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Αποθήκευσε τις αλλαγές σου πριν φύγεις, είπε ο καθηγητής.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.2797999995891587,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-28",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Παίξε μπάλα με τα παιδιά το απόγευμα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.23069999951985665,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-29",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Τρέξε τα πειράματα ξανά με περισσότερους συμμετέχοντες.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.24060000032477546,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    },
+    {
+      "id": "dic-30",
+      "split": "dictation",
+      "lang": "el",
+      "text": "Αντέγραψε τις σημειώσεις από τον πίνακα.",
+      "expected_route": "dictation",
+      "route": "dictation",
+      "route_reason": "no wake word",
+      "parser": "none",
+      "intents": [],
+      "ms": 0.27070000032836106,
+      "route_ok": true,
+      "exact": true,
+      "action": true
+    }
+  ]
+}

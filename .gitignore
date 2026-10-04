@@ -30,3 +30,8 @@ logs/
 *.gguf
 tests/artifacts/
 benchmark_results/
+
+# local runtime data and downloaded corpora
+/data/
+research/data/fleurs/
+research/data/fetch.log

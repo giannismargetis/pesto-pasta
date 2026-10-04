@@ -1,0 +1,94 @@
+{
+  "tag": "baseline-parakeet-el",
+  "manifest": "research\\data\\manifests\\fleurs_el_200.jsonl",
+  "n": 200,
+  "audio_seconds": 2168.3,
+  "config": {
+    "impl": "baseline",
+    "language_mode": "auto",
+    "engine": "whisper",
+    "language": "auto",
+    "whisper_model": "large-v3-turbo",
+    "whisper_compute_cuda": "int8_float16",
+    "whisper_beam_size": 2,
+    "whisper_vad_filter": true,
+    "parakeet_model": "nemo-parakeet-tdt-0.6b-v3",
+    "parakeet_quantization": "int8",
+    "parakeet_provider": "",
+    "device": "cpu"
+  },
+  "environment": {
+    "python": "3.13.3",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "cpu": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+    "gpu": "NVIDIA GeForce RTX 3050",
+    "gpu_total_mb": 8192,
+    "git_commit": "d6799d0",
+    "git_dirty": true,
+    "versions": {
+      "ctranslate2": "4.7.1",
+      "faster_whisper": "1.2.1",
+      "onnxruntime": "1.29.0",
+      "onnx_asr": "0.12.0",
+      "numpy": "2.3.5"
+    },
+    "timestamp": "2026-10-04T16:30:18"
+  },
+  "accuracy": {
+    "wer": 0.42824219568405614,
+    "cer": 0.17449642411915228,
+    "cer_no_accents": 0.16905058723180894,
+    "wer_formatted": 0.4533533158486324
+  },
+  "accuracy_ci95": {
+    "wer": [
+      0.40295776611869366,
+      0.45736019617566503
+    ],
+    "cer": [
+      0.15259185130854916,
+      0.1992041628557859
+    ],
+    "cer_no_accents": [
+      0.14736103745417503,
+      0.19345392410609902
+    ],
+    "wer_formatted": [
+      0.42643183683871344,
+      0.48292717563556203
+    ]
+  },
+  "language_id_accuracy": {
+    "el": 0.955
+  },
+  "latency_ms": {
+    "n": 200,
+    "mean": 697.8959884999948,
+    "sd": 233.70671762157062,
+    "min": 325.5255999997644,
+    "p50": 642.4307499999031,
+    "p90": 1031.4222800002426,
+    "p95": 1153.2562049998655,
+    "p99": 1357.3932960000816,
+    "max": 1535.7885999997052
+  },
+  "rtf": {
+    "n": 200,
+    "mean": 0.06438120879541007,
+    "sd": 0.005753395543168265,
+    "min": 0.05755937275986286,
+    "p50": 0.06301795522875604,
+    "p90": 0.07088157280574844,
+    "p95": 0.07372904971008212,
+    "p99": 0.08273190085926319,
+    "max": 0.1158877845528689
+  },
+  "load_seconds": 10.74,
+  "first_inference_ms": 1062.5,
+  "vram_mb": {
+    "before_load": 1122,
+    "after_load": 1200,
+    "peak_sampled": 1352,
+    "model_delta": 78
+  }
+}

@@ -1,201 +1,136 @@
+"""``python -m pasta`` — PESTO + voice commands."""
+
+from __future__ import annotations
+
 import argparse
-import ctypes
+import json
 import sys
+import time
 
-from .config import ENGINES, Config, load_config
-from .logging_setup import get_logger, setup_logging
-from .startup import disable_startup, enable_startup, is_startup_enabled, sync_startup
+from pesto.cli import _apply_overrides, _utf8_console, build_parser, run_headless
 
-
-def _enforce_single_instance() -> bool:
-    if sys.platform != "win32":
-        return True
-    ctypes.windll.kernel32.CreateMutexW(None, False, "PASTA_V2_App_Mutex")
-    return ctypes.windll.kernel32.GetLastError() != 183
+from . import __version__
 
 
-def _is_admin() -> bool:
-    if sys.platform != "win32":
-        return True
-    try:
-        return bool(ctypes.windll.shell32.IsUserAnAdmin())
-    except Exception:
-        return False
+def cmd_run(args) -> int:
+    from pesto.app import PestoApp, single_instance
+    from pesto.config import load_config
+
+    from . import settings  # noqa: F401
+    from .extension import PastaExtension
+
+    if not single_instance("PASTA"):
+        print("PASTA is already running (see the tray icon).")
+        return 0
+    cfg = load_config()
+    _apply_overrides(cfg, args)
+    ext = PastaExtension()
+    app = PestoApp(cfg, extensions=[ext])
+    if args.headless:
+        return run_headless(app)
+    from pesto.ui.run import run_gui
+
+    from .ui import install
+
+    return run_gui(app, "PASTA", "Speech input + voice commands · Ελληνικά & English", args.dashboard,
+                   ui_hooks=[install(ext)])
 
 
-def cmd_run(cfg: Config) -> int:
-    log = get_logger()
-    if not _enforce_single_instance():
-        log.info("PASTA is already running. Opening Dashboard...")
-        return cmd_gui(cfg)
+def cmd_parse(args) -> int:
+    from . import settings  # noqa: F401
+    from .nlu import grammar
+    from .router import Router
 
-    if not _is_admin():
-        log.warning("Not running as Administrator - global hotkeys may not reach elevated apps")
+    text = " ".join(args.text)
+    from pesto.config import load_config
 
-    if cfg.run_on_startup:
-        sync_startup(True)
-
-    from .pipeline import Pipeline
-    from .tray import TrayController
-
-    pipeline = Pipeline(cfg)
-    pipeline.overlay.hide()
-
-    log.info("=" * 60)
-    log.info("🍝 PASTA V2 — Local Voice-to-Computer Control & Dictation")
-    log.info("Mode: %s (Press [%s] or Click HUD to cycle)", cfg.mode.upper(), cfg.toggle_mode_key.upper())
-    log.info("ASR Engine: %s | Language: %s", pipeline.active_engine.upper(), pipeline.language_mode.upper())
-    log.info("Decision Model: %s (%s)", cfg.agent.model, cfg.agent.model_runtime)
-    log.info("Hold [%s] to dictate or issue computer commands", cfg.hotkey.upper())
-    log.info("Press [Esc] at any time to cancel running agent actions")
-    log.info("Run on Startup: %s", "ENABLED" if is_startup_enabled() else "DISABLED")
-    log.info("=" * 60)
-
-    pipeline.start()
-    TrayController(pipeline).start()
-    pipeline.overlay.show_toast("🍝 PASTA V2 Ready", "Hold [Right Ctrl] to speak. Say 'Pasta, open Chrome...'", duration=2.5)
-    pipeline.wait_forever()
-    log.info("Goodbye!")
-    return 0
+    cfg = load_config()
+    route = Router(cfg.agent.wake_words).route(text, args.mode or cfg.agent.mode)
+    t0 = time.perf_counter()
+    intents = grammar.parse(route.command or text)
+    ms = (time.perf_counter() - t0) * 1000
+    print(json.dumps({"route": route.__dict__, "intents": [i.to_dict() for i in intents], "parse_ms": round(ms, 3)},
+                     ensure_ascii=False, indent=2))
+    return 0 if intents else 1
 
 
-def cmd_agent(goal: str, cfg: Config) -> int:
-    """Execute an agent command directly from the command line."""
-    log = get_logger()
-    from .agent.loop import AgentLoop
-    from .agent.models import create_decision_model
+def cmd_do(args) -> int:
+    """Run a command from the console (no microphone): useful for testing and demos."""
+    import threading
 
-    log.info("Executing Agent goal: '%s'", goal)
-    model = create_decision_model(cfg)
-    loop = AgentLoop(cfg, model)
-    res = loop.execute_goal(goal, transcript=goal)
-    print("\n--- Agent Result ---")
-    print(f"Goal:    {res['goal']}")
-    print(f"Status:  {res['status']}")
-    print(f"Success: {res['success']}")
-    print(f"Steps:   {res['steps']}")
-    print(f"Time:    {res['elapsed_ms']:.1f}ms")
-    return 0 if res["success"] else 1
+    from pesto.config import load_config
+    from pesto.events import TERMINAL, EventBus, Status
+    from pesto.inject import TextInjector
 
+    from . import safety, settings  # noqa: F401
+    from .agent import Agent
+    from .executors import Executors
+    from .planner import GroundingError, Planner
+    from .world.apps import AppIndex
 
-def cmd_benchmark() -> int:
-    from benchmark.run_benchmark import run_pasta_benchmark
+    cfg = load_config()
+    text = " ".join(args.text)
+    apps = AppIndex()
+    apps.start()
+    apps.wait(15)
+    planner = Planner(Executors(TextInjector(cfg.inject), apps, cfg.agent, cfg.permissions), apps, cfg.agent,
+                      cfg.permissions)
+    bus = EventBus()
+    agent = Agent(cfg, bus, None, planner)
+    intents, parser, diag = agent.understand(text)
+    print(f"parser={parser} intents={[i.to_dict() for i in intents]}")
+    if diag:
+        print("llm:", json.dumps({k: v for k, v in diag.items() if k != "raw"}, ensure_ascii=False))
+    if args.dry_run:
+        for intent in intents:
+            try:
+                step = planner.ground(intent)
+                gate = safety.decide(step, cfg.agent, cfg.permissions)
+                print(f"  - {step.label}  risk={step.risk.name} conf={step.confidence:.2f} gate={gate.kind} {gate.reason}")
+            except GroundingError as exc:
+                print(f"  - {planner.describe(intent)}: cannot ground ({exc})")
+        return 0
+    done = threading.Event()
 
-    return run_pasta_benchmark()
+    def show(st: Status) -> None:
+        steps = " | ".join(f"{s['state']}: {s['label']}" for s in st.data.get("steps", []))
+        print(f"[{st.phase.value}] {st.message} {st.detail}  {steps}".rstrip())
+        if st.phase in TERMINAL:
+            done.set()
+        if st.phase.value == "confirm":
+            if args.yes:
+                agent.answer(True)
+            else:
+                ans = input("  confirm? [y/N] ").strip().lower()
+                agent.answer(ans in ("y", "yes", "ν", "ναι"))
 
-
-def cmd_gui(cfg: Config) -> int:
-    from .gui import DashboardApp
-
-    app = DashboardApp(cfg)
-    app.run()
-    return 0
-
-
-def cmd_startup(action: str, cfg: Config) -> int:
-    if action == "enable":
-        ok = enable_startup()
-        cfg.run_on_startup = True
-        cfg.save()
-        print("Startup enabled:", ok)
-    elif action == "disable":
-        ok = disable_startup()
-        cfg.run_on_startup = False
-        cfg.save()
-        print("Startup disabled:", ok)
-    else:
-        print("Startup enabled:", is_startup_enabled())
-    return 0
-
-
-def cmd_download(engine: str, cfg: Config) -> int:
-    log = get_logger()
-    from .engines import create_engine
-
-    targets = list(ENGINES) if engine == "all" else [engine]
-    for name in targets:
-        if name not in ENGINES:
-            log.error("Unknown engine '%s' (choose from: %s)", name, ", ".join(ENGINES))
-            return 1
-        log.info("Downloading model for engine '%s'...", name)
-        instance = create_engine(name, cfg)
-        try:
-            instance.load()
-            instance.unload()
-        except Exception as exc:
-            log.error("Download failed for '%s': %s", name, exc)
-            return 1
-        log.info("'%s' ready", name)
-
-    # Pre-load decision model
-    log.info("Validating decision model: %s...", cfg.agent.model)
-    from .agent.models import create_decision_model
-
-    dm = create_decision_model(cfg)
-    dm.load()
-    dm.unload()
-    log.info("Decision model ready")
+    bus.subscribe(show, Status)
+    agent.submit(text)
+    done.wait(60)
+    while agent.busy:
+        time.sleep(0.05)
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    if hasattr(sys.stderr, "reconfigure"):
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    _utf8_console()
+    ap = build_parser("pasta")
+    ap.description = "PASTA — PESTO speech input + voice commands for Windows"
+    sub = next(a for a in ap._actions if isinstance(a, argparse._SubParsersAction))
+    p = sub.add_parser("parse", help="show how an utterance is routed and parsed")
+    p.add_argument("text", nargs="+")
+    p.add_argument("--mode", choices=["dictation", "hybrid", "command"])
+    d = sub.add_parser("do", help="execute a command typed on the console")
+    d.add_argument("text", nargs="+")
+    d.add_argument("--dry-run", action="store_true", help="parse, ground and gate only")
+    d.add_argument("--yes", action="store_true", help="answer confirmations with yes")
+    args = ap.parse_args(argv)
+    from pesto import cli as core
 
-    parser = argparse.ArgumentParser(
-        prog="pasta",
-        description="PASTA V2 — Fast local push-to-talk speech-to-text & real-time computer control for Windows",
-    )
-    sub = parser.add_subparsers(dest="command")
-    run_p = sub.add_parser("run", help="start push-to-talk & computer control (default)")
-    run_p.add_argument("--mode", choices=["auto", "agent", "dictation"], help="operation mode (auto, agent, dictation)")
-    run_p.add_argument("--engine", choices=[*ENGINES], help="ASR engine (whisper, parakeet)")
-    run_p.add_argument("--language", choices=["auto", "el", "en"], help="dictation language")
-
-    ag = sub.add_parser("agent", help="directly execute an agent automation command")
-    ag.add_argument("goal", help="task goal (e.g. 'open Chrome and search RTX 5090')")
-
-    sub.add_parser("benchmark", help="run the 50+ deterministic capability benchmark suite")
-    sub.add_parser("gui", help="open Settings & Dashboard control panel")
-
-    st = sub.add_parser("startup", help="manage Windows startup")
-    st.add_argument("action", nargs="?", default="status", choices=["enable", "disable", "status"])
-
-    dl = sub.add_parser("download", help="pre-download ASR and Decider models")
-    dl.add_argument("--engine", default="all", choices=[*ENGINES, "all"])
-
-    args = parser.parse_args(argv)
-
-    setup_logging()
-    cfg = load_config()
-
-    if getattr(args, "mode", None):
-        cfg.mode = args.mode
-    if getattr(args, "engine", None) and args.command == "run":
-        cfg.engine = args.engine
-    if getattr(args, "language", None) and args.command == "run":
-        cfg.language = args.language
-
-    command = args.command or "run"
-
-    if command == "run":
-        return cmd_run(cfg)
-    if command == "agent":
-        return cmd_agent(args.goal, cfg)
-    if command == "benchmark":
-        return cmd_benchmark()
-    if command == "gui":
-        return cmd_gui(cfg)
-    if command == "startup":
-        return cmd_startup(args.action, cfg)
-    if command == "download":
-        return cmd_download(args.engine, cfg)
-
-    parser.print_help()
-    return 1
+    handlers = {"run": cmd_run, "parse": cmd_parse, "do": cmd_do}
+    fn = handlers.get(args.command or "run") or core.COMMANDS[args.command]
+    return fn(args)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

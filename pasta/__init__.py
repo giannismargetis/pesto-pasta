@@ -1,4 +1,3 @@
-"""PASTA V2 — Fast local bilingual push-to-talk voice typer & real-time computer control for Windows."""
+"""PASTA: voice commands for Windows, built on PESTO."""
 
-__version__ = "2.0.0"
-__app_name__ = "PASTA"
+__version__ = "3.0.0.dev0"

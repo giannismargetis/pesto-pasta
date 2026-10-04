@@ -1,0 +1,201 @@
+{"id": "leg-01", "split": "legacy", "lang": "en", "text": "Pasta, open Calculator.", "route": "command", "intents": [{"action": "open", "args": {"target": "Calculator"}}]}
+{"id": "leg-02", "split": "legacy", "lang": "en", "text": "Pasta, open Notepad.", "route": "command", "intents": [{"action": "open", "args": {"target": "Notepad"}}]}
+{"id": "leg-03", "split": "legacy", "lang": "en", "text": "Pasta, open VS Code.", "route": "command", "intents": [{"action": "open", "args": {"target": "VS Code"}}]}
+{"id": "leg-04", "split": "legacy", "lang": "en", "text": "Pasta, switch to VS Code.", "route": "command", "intents": [{"action": "focus", "args": {"target": "VS Code"}}]}
+{"id": "leg-05", "split": "legacy", "lang": "en", "text": "Pasta, minimize active window.", "route": "command", "intents": [{"action": "minimize"}]}
+{"id": "leg-06", "split": "legacy", "lang": "en", "text": "Pasta, what is currently open?", "route": "command", "intents": [{"action": "list_windows"}]}
+{"id": "leg-07", "split": "legacy", "lang": "en", "text": "Pasta, open Chrome.", "route": "command", "intents": [{"action": "open", "args": {"target": "Chrome"}}]}
+{"id": "leg-08", "split": "legacy", "lang": "en", "text": "Computer, switch to Chrome.", "route": "command", "intents": [{"action": "focus", "args": {"target": "Chrome"}}], "note": "'computer' was removed as a default wake word (it starts ordinary sentences)"}
+{"id": "leg-09", "split": "legacy", "lang": "en", "text": "Pasta, open calc.", "route": "command", "intents": [{"action": "open", "args": {"target": "calc"}}]}
+{"id": "leg-10", "split": "legacy", "lang": "en", "text": "Pasta, launch notepad.", "route": "command", "intents": [{"action": "open", "args": {"target": "notepad"}}]}
+{"id": "leg-11", "split": "legacy", "lang": "en", "text": "Pasta, search for RTX 5090 prices.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "RTX 5090 prices"}}]}
+{"id": "leg-12", "split": "legacy", "lang": "en", "text": "Pasta, open github.com.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "github.com"}}]}
+{"id": "leg-13", "split": "legacy", "lang": "en", "text": "Pasta, open python.org.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "python.org"}}]}
+{"id": "leg-14", "split": "legacy", "lang": "en", "text": "Pasta, create a new browser tab.", "route": "command", "intents": [{"action": "browser", "args": {"op": "new_tab"}}]}
+{"id": "leg-15", "split": "legacy", "lang": "en", "text": "Pasta, close this tab.", "route": "command", "intents": [{"action": "browser", "args": {"op": "close_tab"}}]}
+{"id": "leg-16", "split": "legacy", "lang": "en", "text": "Pasta, go back.", "route": "command", "intents": [{"action": "browser", "args": {"op": "back"}}]}
+{"id": "leg-17", "split": "legacy", "lang": "en", "text": "Pasta, search for Python documentation.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "Python documentation"}}]}
+{"id": "leg-18", "split": "legacy", "lang": "en", "text": "Pasta, open google.com.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "google.com"}}]}
+{"id": "leg-19", "split": "legacy", "lang": "en", "text": "Pasta, search for local weather.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "local weather"}}]}
+{"id": "leg-20", "split": "legacy", "lang": "en", "text": "Pasta, new tab.", "route": "command", "intents": [{"action": "browser", "args": {"op": "new_tab"}}]}
+{"id": "leg-21", "split": "legacy", "lang": "en", "text": "Pasta, open huggingface.co.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "huggingface.co"}}]}
+{"id": "leg-22", "split": "legacy", "lang": "en", "text": "Pasta, search for PyTorch installation.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "PyTorch installation"}}]}
+{"id": "leg-23", "split": "legacy", "lang": "en", "text": "Pasta, press Enter.", "route": "command", "intents": [{"action": "press", "args": {"keys": "enter"}}]}
+{"id": "leg-24", "split": "legacy", "lang": "en", "text": "Pasta, copy this.", "route": "command", "intents": [{"action": "edit", "args": {"op": "copy"}}]}
+{"id": "leg-25", "split": "legacy", "lang": "en", "text": "Pasta, paste it here.", "route": "command", "intents": [{"action": "edit", "args": {"op": "paste"}}]}
+{"id": "leg-26", "split": "legacy", "lang": "en", "text": "Pasta, type hello world.", "route": "command", "intents": [{"action": "type_text", "args": {"text": "hello world"}}]}
+{"id": "leg-27", "split": "legacy", "lang": "en", "text": "Pasta, scroll down.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "down"}}]}
+{"id": "leg-28", "split": "legacy", "lang": "en", "text": "Pasta, scroll up.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "up"}}]}
+{"id": "leg-29", "split": "legacy", "lang": "en", "text": "Pasta, type good morning.", "route": "command", "intents": [{"action": "type_text", "args": {"text": "good morning"}}]}
+{"id": "leg-30", "split": "legacy", "lang": "en", "text": "Pasta, copy selection.", "route": "command", "intents": [{"action": "edit", "args": {"op": "copy"}}]}
+{"id": "leg-31", "split": "legacy", "lang": "en", "text": "Pasta, paste.", "route": "command", "intents": [{"action": "edit", "args": {"op": "paste"}}]}
+{"id": "leg-32", "split": "legacy", "lang": "en", "text": "Pasta, press enter key.", "route": "command", "intents": [{"action": "press", "args": {"keys": "enter"}}]}
+{"id": "leg-33", "split": "legacy", "lang": "en", "text": "Pasta, open Downloads.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "downloads"}}]}
+{"id": "leg-34", "split": "legacy", "lang": "en", "text": "Pasta, find my PDF named diploma.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "diploma"}}]}
+{"id": "leg-35", "split": "legacy", "lang": "en", "text": "Pasta, open my Downloads folder.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "downloads"}}]}
+{"id": "leg-36", "split": "legacy", "lang": "en", "text": "Pasta, find file thesis.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "thesis"}}]}
+{"id": "leg-37", "split": "legacy", "lang": "en", "text": "Pasta, open Downloads directory.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "downloads"}}]}
+{"id": "leg-38", "split": "legacy", "lang": "en", "text": "Pasta, find notes.txt.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "notes.txt"}}]}
+{"id": "leg-39", "split": "legacy", "lang": "en", "text": "Pasta, run git status in the terminal.", "route": "command", "intents": [{"action": "run_command", "args": {"command": "git status"}}]}
+{"id": "leg-40", "split": "legacy", "lang": "en", "text": "Pasta, mute my computer.", "route": "command", "intents": [{"action": "volume", "args": {"op": "mute"}}]}
+{"id": "leg-41", "split": "legacy", "lang": "en", "text": "Pasta, mute sound.", "route": "command", "intents": [{"action": "volume", "args": {"op": "mute"}}]}
+{"id": "leg-42", "split": "legacy", "lang": "en", "text": "Pasta, run python --version.", "route": "command", "intents": [{"action": "run_command", "args": {"command": "python --version"}}]}
+{"id": "leg-43", "split": "legacy", "lang": "en", "text": "Pasta, run git status.", "route": "command", "intents": [{"action": "run_command", "args": {"command": "git status"}}]}
+{"id": "leg-44", "split": "legacy", "lang": "en", "text": "Pasta, stop.", "route": "command", "intents": [{"action": "stop"}]}
+{"id": "leg-45", "split": "legacy", "lang": "el", "text": "Πάστα, άνοιξε το Chrome.", "route": "command", "intents": [{"action": "open", "args": {"target": "Chrome"}}]}
+{"id": "leg-46", "split": "legacy", "lang": "el", "text": "Πάστα, ψάξε RTX 5090 τιμές.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "RTX 5090 τιμές"}}]}
+{"id": "leg-47", "split": "legacy", "lang": "el", "text": "Πάστα, άνοιξε το Calculator.", "route": "command", "intents": [{"action": "open", "args": {"target": "Calculator"}}]}
+{"id": "leg-48", "split": "legacy", "lang": "el", "text": "Πάστα, πήγαινε στα Downloads.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "downloads"}}]}
+{"id": "leg-49", "split": "legacy", "lang": "el", "text": "Πάστα, βρες το PDF μου.", "route": "command", "intents": [{"action": "find_file"}]}
+{"id": "leg-50", "split": "legacy", "lang": "el", "text": "Πάστα, γύρνα πίσω.", "route": "command", "intents": [{"action": "browser", "args": {"op": "back"}}]}
+{"id": "leg-51", "split": "legacy", "lang": "el", "text": "Πάστα, πάτα Enter.", "route": "command", "intents": [{"action": "press", "args": {"keys": "enter"}}]}
+{"id": "leg-52", "split": "legacy", "lang": "el", "text": "Πάστα, κάνε paste.", "route": "command", "intents": [{"action": "edit", "args": {"op": "paste"}}]}
+{"id": "leg-53", "split": "legacy", "lang": "el", "text": "Καλησπέρα, αύριο θα σου στείλω το αρχείο με την παρουσίαση.", "route": "dictation"}
+{"id": "leg-54", "split": "legacy", "lang": "en", "text": "The project deadline has been moved to next Tuesday afternoon.", "route": "dictation"}
+{"id": "leg-55", "split": "legacy", "lang": "en", "text": "Please review the attached invoice and let me know if everything is accurate.", "route": "dictation"}
+{"id": "leg-56", "split": "legacy", "lang": "el", "text": "Ευχαριστώ πολύ για τη βοήθεια, τα λέμε αύριο στο γραφείο.", "route": "dictation"}
+{"id": "dev-01", "split": "dev", "lang": "el", "text": "Πάστα, άνοιξε το YouTube και ψάξε χριστουγεννιάτικα τραγούδια.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "χριστουγεννιάτικα τραγούδια", "site": "youtube"}}]}
+{"id": "dev-02", "split": "dev", "lang": "el", "text": "Πάστα, άνοιξε το Chrome, μπες στο YouTube και παίξε ένα πασχαλινό τραγούδι.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "ένα πασχαλινό τραγούδι", "site": "youtube", "browser": "chrome"}}]}
+{"id": "dev-03", "split": "dev", "lang": "el", "text": "Πάστα, κάνε focus στο GitHub.", "route": "command", "intents": [{"action": "focus", "args": {"target": "GitHub"}}]}
+{"id": "dev-04", "split": "dev", "lang": "el", "text": "Πάστα, κάνε save το notepad.", "route": "command", "intents": [{"action": "focus", "args": {"target": "notepad"}}, {"action": "edit", "args": {"op": "save"}}]}
+{"id": "dev-05", "split": "dev", "lang": "en", "text": "Pasta, open Chrome and search for RTX 5090 prices.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "RTX 5090 prices", "browser": "chrome"}}]}
+{"id": "dev-06", "split": "dev", "lang": "en", "text": "Pasta, search for salt and pepper.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "salt and pepper"}}]}
+{"id": "dev-07", "split": "dev", "lang": "en", "text": "Pasta, go to github dot com.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "github.com"}}]}
+{"id": "dev-08", "split": "dev", "lang": "en", "text": "Pasta, press control shift t.", "route": "command", "intents": [{"action": "press", "args": {"keys": "ctrl+shift+t"}}]}
+{"id": "dev-09", "split": "dev", "lang": "el", "text": "Πάστα, πάτα το κουμπί Αποθήκευση.", "route": "command", "intents": [{"action": "click", "args": {"label": "Αποθήκευση"}}]}
+{"id": "dev-10", "split": "dev", "lang": "en", "text": "Pasta, set the volume to 30 percent.", "route": "command", "intents": [{"action": "volume", "args": {"op": "set", "level": 30}}]}
+{"id": "dev-11", "split": "dev", "lang": "el", "text": "Πάστα, βάλε την ένταση στο 20.", "route": "command", "intents": [{"action": "volume", "args": {"op": "set", "level": 20}}]}
+{"id": "dev-12", "split": "dev", "lang": "el", "text": "Πάστα, σίγαση.", "route": "command", "intents": [{"action": "volume", "args": {"op": "mute"}}]}
+{"id": "dev-13", "split": "dev", "lang": "en", "text": "Pasta, minimize Spotify.", "route": "command", "intents": [{"action": "minimize", "args": {"target": "Spotify"}}]}
+{"id": "dev-14", "split": "dev", "lang": "en", "text": "Pasta, close this window.", "route": "command", "intents": [{"action": "close"}]}
+{"id": "dev-15", "split": "dev", "lang": "el", "text": "Πάστα, κλείσε την καρτέλα.", "route": "command", "intents": [{"action": "browser", "args": {"op": "close_tab"}}]}
+{"id": "dev-16", "split": "dev", "lang": "el", "text": "Πάστα, γράψε καλημέρα σε όλους.", "route": "command", "intents": [{"action": "type_text", "args": {"text": "καλημέρα σε όλους"}}]}
+{"id": "dev-17", "split": "dev", "lang": "el", "text": "Πάστα, βρες το αρχείο thesis.pdf.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "thesis.pdf"}}]}
+{"id": "dev-18", "split": "dev", "lang": "el", "text": "Πάστα, τι είναι ανοιχτό;", "route": "command", "intents": [{"action": "list_windows"}]}
+{"id": "dev-19", "split": "dev", "lang": "el", "text": "Πάστα, άνοιξε τις λήψεις.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "downloads"}}]}
+{"id": "dev-20", "split": "dev", "lang": "en", "text": "Pasta, scroll down a lot.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "down", "amount": "large"}}]}
+{"id": "dev-21", "split": "dev", "lang": "en", "text": "Pasta, where is Patras on the map?", "route": "command", "intents": [{"action": "web_search", "args": {"query": "Patras", "site": "maps"}}]}
+{"id": "dev-22", "split": "dev", "lang": "en", "text": "Pasta, open github.com in Edge.", "route": "command", "intents": [{"action": "open", "args": {"target": "github.com", "browser": "msedge"}}]}
+{"id": "dev-23", "split": "dev", "lang": "en", "text": "Pasta, run del /s c:", "route": "command", "intents": [{"action": "run_command"}]}
+{"id": "dev-24", "split": "dev", "lang": "el", "text": "Πάστα, κάνε κλικ στο Sign in.", "route": "command", "intents": [{"action": "click", "args": {"label": "Sign in"}}]}
+{"id": "dev-25", "split": "dev", "lang": "el", "text": "Πάστα με κιμά και σάλτσα ντομάτας για βραδινό.", "route": "dictation"}
+{"id": "ho-01", "split": "heldout", "lang": "en", "text": "Pasta, could you open Discord for me?", "route": "command", "intents": [{"action": "open", "args": {"target": "Discord"}}]}
+{"id": "ho-02", "split": "heldout", "lang": "en", "text": "Pasta, bring up Steam.", "route": "command", "intents": [{"action": "open", "args": {"target": "Steam"}}]}
+{"id": "ho-03", "split": "heldout", "lang": "en", "text": "Pasta, start the calculator please.", "route": "command", "intents": [{"action": "open", "args": {"target": "calculator"}}]}
+{"id": "ho-04", "split": "heldout", "lang": "en", "text": "Jarvis, go to Discord.", "route": "command", "intents": [{"action": "focus", "args": {"target": "Discord"}}]}
+{"id": "ho-05", "split": "heldout", "lang": "en", "text": "Pasta, jump back to Visual Studio Code.", "route": "command", "intents": [{"action": "focus", "args": {"target": "Visual Studio Code"}}]}
+{"id": "ho-06", "split": "heldout", "lang": "en", "text": "Pasta, quit Notepad.", "route": "command", "intents": [{"action": "close", "args": {"target": "Notepad"}}]}
+{"id": "ho-07", "split": "heldout", "lang": "en", "text": "Pasta, make this window full screen.", "route": "command", "intents": [{"action": "maximize"}]}
+{"id": "ho-08", "split": "heldout", "lang": "en", "text": "Pasta, hide everything and show me the desktop.", "route": "command", "intents": [{"action": "show_desktop"}]}
+{"id": "ho-09", "split": "heldout", "lang": "en", "text": "Pasta, google how to cite a thesis in APA.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "how to cite a thesis in APA"}}]}
+{"id": "ho-10", "split": "heldout", "lang": "en", "text": "Pasta, look up the weather in Patras.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "the weather in Patras"}}]}
+{"id": "ho-11", "split": "heldout", "lang": "en", "text": "Pasta, play lo-fi beats on YouTube.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "lo-fi beats", "site": "youtube"}}]}
+{"id": "ho-12", "split": "heldout", "lang": "en", "text": "Pasta, search Wikipedia for Alan Turing.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "Alan Turing", "site": "wikipedia"}}]}
+{"id": "ho-13", "split": "heldout", "lang": "en", "text": "Pasta, visit stackoverflow.com.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "stackoverflow.com"}}]}
+{"id": "ho-14", "split": "heldout", "lang": "en", "text": "Pasta, open a new tab.", "route": "command", "intents": [{"action": "browser", "args": {"op": "new_tab"}}]}
+{"id": "ho-15", "split": "heldout", "lang": "en", "text": "Pasta, refresh the page.", "route": "command", "intents": [{"action": "browser", "args": {"op": "reload"}}]}
+{"id": "ho-16", "split": "heldout", "lang": "en", "text": "Pasta, go to the next tab.", "route": "command", "intents": [{"action": "browser", "args": {"op": "next_tab"}}]}
+{"id": "ho-17", "split": "heldout", "lang": "en", "text": "Pasta, go forward.", "route": "command", "intents": [{"action": "browser", "args": {"op": "forward"}}]}
+{"id": "ho-18", "split": "heldout", "lang": "en", "text": "Pasta, hit escape.", "route": "command", "intents": [{"action": "press", "args": {"keys": "esc"}}]}
+{"id": "ho-19", "split": "heldout", "lang": "en", "text": "Pasta, press control s.", "route": "command", "intents": [{"action": "press", "args": {"keys": "ctrl+s"}}]}
+{"id": "ho-20", "split": "heldout", "lang": "en", "text": "Pasta, save the file.", "route": "command", "intents": [{"action": "edit", "args": {"op": "save"}}]}
+{"id": "ho-21", "split": "heldout", "lang": "en", "text": "Pasta, undo that.", "route": "command", "intents": [{"action": "edit", "args": {"op": "undo"}}]}
+{"id": "ho-22", "split": "heldout", "lang": "en", "text": "Pasta, select everything and copy it.", "route": "command", "intents": [{"action": "edit", "args": {"op": "select_all"}}, {"action": "edit", "args": {"op": "copy"}}]}
+{"id": "ho-23", "split": "heldout", "lang": "en", "text": "Pasta, write Dear Professor Papadopoulos.", "route": "command", "intents": [{"action": "type_text", "args": {"text": "Dear Professor Papadopoulos"}}]}
+{"id": "ho-24", "split": "heldout", "lang": "en", "text": "Pasta, turn the volume down.", "route": "command", "intents": [{"action": "volume", "args": {"op": "down"}}]}
+{"id": "ho-25", "split": "heldout", "lang": "en", "text": "Pasta, louder.", "route": "command", "intents": [{"action": "volume", "args": {"op": "up"}}]}
+{"id": "ho-26", "split": "heldout", "lang": "en", "text": "Pasta, unmute.", "route": "command", "intents": [{"action": "volume", "args": {"op": "unmute"}}]}
+{"id": "ho-27", "split": "heldout", "lang": "en", "text": "Pasta, pause the music.", "route": "command", "intents": [{"action": "media", "args": {"op": "play_pause"}}]}
+{"id": "ho-28", "split": "heldout", "lang": "en", "text": "Pasta, skip this song.", "route": "command", "intents": [{"action": "media", "args": {"op": "next"}}]}
+{"id": "ho-29", "split": "heldout", "lang": "en", "text": "Pasta, open my documents.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "documents"}}]}
+{"id": "ho-30", "split": "heldout", "lang": "en", "text": "Pasta, find the file called budget.xlsx.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "budget.xlsx"}}]}
+{"id": "ho-31", "split": "heldout", "lang": "en", "text": "Pasta, click Sign in.", "route": "command", "intents": [{"action": "click", "args": {"label": "Sign in"}}]}
+{"id": "ho-32", "split": "heldout", "lang": "en", "text": "Pasta, press the submit button.", "route": "command", "intents": [{"action": "click", "args": {"label": "submit"}}]}
+{"id": "ho-33", "split": "heldout", "lang": "en", "text": "Pasta, run git log.", "route": "command", "intents": [{"action": "run_command", "args": {"command": "git log"}}]}
+{"id": "ho-34", "split": "heldout", "lang": "en", "text": "Pasta, what windows are open?", "route": "command", "intents": [{"action": "list_windows"}]}
+{"id": "ho-35", "split": "heldout", "lang": "en", "text": "Pasta, never mind.", "route": "command", "intents": [{"action": "stop"}]}
+{"id": "ho-36", "split": "heldout", "lang": "en", "text": "Pasta, open Spotify and then turn the volume up.", "route": "command", "intents": [{"action": "open", "args": {"target": "Spotify"}}, {"action": "volume", "args": {"op": "up"}}]}
+{"id": "ho-37", "split": "heldout", "lang": "en", "text": "Pasta, open Notepad and type meeting notes.", "route": "command", "intents": [{"action": "open", "args": {"target": "Notepad"}}, {"action": "type_text", "args": {"text": "meeting notes"}}]}
+{"id": "ho-38", "split": "heldout", "lang": "en", "text": "Pasta, restore the window.", "route": "command", "intents": [{"action": "restore"}]}
+{"id": "ho-39", "split": "heldout", "lang": "en", "text": "Pasta, page down.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "down"}}]}
+{"id": "ho-40", "split": "heldout", "lang": "en", "text": "Pasta, show me directions to the University of Patras.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "the University of Patras", "site": "maps"}}]}
+{"id": "ho-41", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξέ μου το Discord.", "route": "command", "intents": [{"action": "open", "args": {"target": "Discord"}}]}
+{"id": "ho-42", "split": "heldout", "lang": "el", "text": "Πάστα, μπορείς να ανοίξεις το Steam;", "route": "command", "intents": [{"action": "open", "args": {"target": "Steam"}}]}
+{"id": "ho-43", "split": "heldout", "lang": "el", "text": "Πάστα, ξεκίνα το Visual Studio Code.", "route": "command", "intents": [{"action": "open", "args": {"target": "Visual Studio Code"}}]}
+{"id": "ho-44", "split": "heldout", "lang": "el", "text": "Πάστα, πήγαινε στο Discord.", "route": "command", "intents": [{"action": "focus", "args": {"target": "Discord"}}]}
+{"id": "ho-45", "split": "heldout", "lang": "el", "text": "Τζάρβις, γύρνα στο Chrome.", "route": "command", "intents": [{"action": "focus", "args": {"target": "Chrome"}}]}
+{"id": "ho-46", "split": "heldout", "lang": "el", "text": "Πάστα, κλείσε το Σημειωματάριο.", "route": "command", "intents": [{"action": "close", "args": {"target": "Σημειωματάριο"}}]}
+{"id": "ho-47", "split": "heldout", "lang": "el", "text": "Πάστα, ελαχιστοποίησε το παράθυρο.", "route": "command", "intents": [{"action": "minimize"}]}
+{"id": "ho-48", "split": "heldout", "lang": "el", "text": "Πάστα, μεγιστοποίησε το Chrome.", "route": "command", "intents": [{"action": "maximize", "args": {"target": "Chrome"}}]}
+{"id": "ho-49", "split": "heldout", "lang": "el", "text": "Πάστα, δείξε μου την επιφάνεια εργασίας.", "route": "command", "intents": [{"action": "show_desktop"}]}
+{"id": "ho-50", "split": "heldout", "lang": "el", "text": "Πάστα, ψάξε στο Google πώς γράφω βιβλιογραφία.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "πώς γράφω βιβλιογραφία"}}]}
+{"id": "ho-51", "split": "heldout", "lang": "el", "text": "Πάστα, αναζήτησε συνταγές για μουσακά.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "συνταγές για μουσακά"}}]}
+{"id": "ho-52", "split": "heldout", "lang": "el", "text": "Πάστα, βάλε στο YouTube Χατζιδάκι.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "Χατζιδάκι", "site": "youtube"}}]}
+{"id": "ho-53", "split": "heldout", "lang": "el", "text": "Πάστα, παίξε Θεοδωράκη στο YouTube.", "route": "command", "intents": [{"action": "web_search", "args": {"query": "Θεοδωράκη", "site": "youtube"}}]}
+{"id": "ho-54", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξε το eclass.upatras.gr.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "eclass.upatras.gr"}}]}
+{"id": "ho-55", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξε νέα καρτέλα.", "route": "command", "intents": [{"action": "browser", "args": {"op": "new_tab"}}]}
+{"id": "ho-56", "split": "heldout", "lang": "el", "text": "Πάστα, ανανέωσε τη σελίδα.", "route": "command", "intents": [{"action": "browser", "args": {"op": "reload"}}]}
+{"id": "ho-57", "split": "heldout", "lang": "el", "text": "Πάστα, πήγαινε πίσω.", "route": "command", "intents": [{"action": "browser", "args": {"op": "back"}}]}
+{"id": "ho-58", "split": "heldout", "lang": "el", "text": "Πάστα, πάτα Escape.", "route": "command", "intents": [{"action": "press", "args": {"keys": "esc"}}]}
+{"id": "ho-59", "split": "heldout", "lang": "el", "text": "Πάστα, αντέγραψέ το.", "route": "command", "intents": [{"action": "edit", "args": {"op": "copy"}}]}
+{"id": "ho-60", "split": "heldout", "lang": "el", "text": "Πάστα, επικόλλησε.", "route": "command", "intents": [{"action": "edit", "args": {"op": "paste"}}]}
+{"id": "ho-61", "split": "heldout", "lang": "el", "text": "Πάστα, αναίρεση.", "route": "command", "intents": [{"action": "edit", "args": {"op": "undo"}}]}
+{"id": "ho-62", "split": "heldout", "lang": "el", "text": "Πάστα, αποθήκευσε.", "route": "command", "intents": [{"action": "edit", "args": {"op": "save"}}]}
+{"id": "ho-63", "split": "heldout", "lang": "el", "text": "Πάστα, γράψε Αξιότιμε κύριε καθηγητά.", "route": "command", "intents": [{"action": "type_text", "args": {"text": "Αξιότιμε κύριε καθηγητά"}}]}
+{"id": "ho-64", "split": "heldout", "lang": "el", "text": "Πάστα, χαμήλωσε την ένταση.", "route": "command", "intents": [{"action": "volume", "args": {"op": "down"}}]}
+{"id": "ho-65", "split": "heldout", "lang": "el", "text": "Πάστα, δυνάμωσε τον ήχο.", "route": "command", "intents": [{"action": "volume", "args": {"op": "up"}}]}
+{"id": "ho-66", "split": "heldout", "lang": "el", "text": "Πάστα, κλείσε τον ήχο.", "route": "command", "intents": [{"action": "volume", "args": {"op": "mute"}}]}
+{"id": "ho-67", "split": "heldout", "lang": "el", "text": "Πάστα, επόμενο τραγούδι.", "route": "command", "intents": [{"action": "media", "args": {"op": "next"}}]}
+{"id": "ho-68", "split": "heldout", "lang": "el", "text": "Πάστα, παύση.", "route": "command", "intents": [{"action": "media", "args": {"op": "play_pause"}}]}
+{"id": "ho-69", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξε τα έγγραφα.", "route": "command", "intents": [{"action": "open_folder", "args": {"folder": "documents"}}]}
+{"id": "ho-70", "split": "heldout", "lang": "el", "text": "Πάστα, βρες μου το αρχείο διπλωματική.", "route": "command", "intents": [{"action": "find_file", "args": {"query": "διπλωματική"}}]}
+{"id": "ho-71", "split": "heldout", "lang": "el", "text": "Πάστα, κάνε κλικ στο Υποβολή.", "route": "command", "intents": [{"action": "click", "args": {"label": "Υποβολή"}}]}
+{"id": "ho-72", "split": "heldout", "lang": "el", "text": "Πάστα, τρέξε git status.", "route": "command", "intents": [{"action": "run_command", "args": {"command": "git status"}}]}
+{"id": "ho-73", "split": "heldout", "lang": "el", "text": "Πάστα, ποια παράθυρα είναι ανοιχτά;", "route": "command", "intents": [{"action": "list_windows"}]}
+{"id": "ho-74", "split": "heldout", "lang": "el", "text": "Πάστα, άκυρο.", "route": "command", "intents": [{"action": "stop"}]}
+{"id": "ho-75", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξε το Σημειωματάριο και γράψε σημειώσεις συνάντησης.", "route": "command", "intents": [{"action": "open", "args": {"target": "Σημειωματάριο"}}, {"action": "type_text", "args": {"text": "σημειώσεις συνάντησης"}}]}
+{"id": "ho-76", "split": "heldout", "lang": "el", "text": "Πάστα, άνοιξε το Chrome και πήγαινε στο github.com.", "route": "command", "intents": [{"action": "open_url", "args": {"url": "github.com", "browser": "chrome"}}]}
+{"id": "ho-77", "split": "heldout", "lang": "el", "text": "Πάστα, σκρόλαρε κάτω.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "down"}}]}
+{"id": "ho-78", "split": "heldout", "lang": "el", "text": "Πάστα, κατέβα λίγο.", "route": "command", "intents": [{"action": "scroll", "args": {"direction": "down"}}]}
+{"id": "ho-79", "split": "heldout", "lang": "el", "text": "Πάστα, επόμενη καρτέλα.", "route": "command", "intents": [{"action": "browser", "args": {"op": "next_tab"}}]}
+{"id": "ho-80", "split": "heldout", "lang": "el", "text": "Πάστα, πού είναι η Πάτρα στον χάρτη;", "route": "command", "intents": [{"action": "web_search", "args": {"query": "η Πάτρα", "site": "maps"}}]}
+{"id": "oos-01", "split": "heldout_oos", "lang": "en", "text": "Pasta, what's the weather going to be like tomorrow?", "route": "command", "oos": true}
+{"id": "oos-02", "split": "heldout_oos", "lang": "en", "text": "Pasta, send an email to my supervisor.", "route": "command", "oos": true}
+{"id": "oos-03", "split": "heldout_oos", "lang": "en", "text": "Pasta, delete all my downloads.", "route": "command", "oos": true}
+{"id": "oos-04", "split": "heldout_oos", "lang": "en", "text": "Pasta, tell me a joke.", "route": "command", "oos": true}
+{"id": "oos-05", "split": "heldout_oos", "lang": "en", "text": "Pasta, shut down the computer.", "route": "command", "oos": true}
+{"id": "oos-06", "split": "heldout_oos", "lang": "el", "text": "Πάστα, τι ώρα είναι;", "route": "command", "oos": true}
+{"id": "oos-07", "split": "heldout_oos", "lang": "el", "text": "Πάστα, σβήσε τον φάκελο με τις φωτογραφίες.", "route": "command", "oos": true}
+{"id": "oos-08", "split": "heldout_oos", "lang": "el", "text": "Πάστα, στείλε μήνυμα στη μαμά μου.", "route": "command", "oos": true}
+{"id": "oos-09", "split": "heldout_oos", "lang": "el", "text": "Πάστα, κλείσε τον υπολογιστή.", "route": "command", "oos": true}
+{"id": "oos-10", "split": "heldout_oos", "lang": "el", "text": "Πάστα, πες μου ένα ανέκδοτο.", "route": "command", "oos": true}
+{"id": "dic-01", "split": "dictation", "lang": "en", "text": "Open the report and check whether the figures match the appendix.", "route": "dictation"}
+{"id": "dic-02", "split": "dictation", "lang": "en", "text": "Search for related work was conducted in IEEE Xplore and the ACM Digital Library.", "route": "dictation"}
+{"id": "dic-03", "split": "dictation", "lang": "en", "text": "Close collaboration with the supervisor is essential for the thesis.", "route": "dictation"}
+{"id": "dic-04", "split": "dictation", "lang": "en", "text": "Type I errors were controlled using the Holm correction.", "route": "dictation"}
+{"id": "dic-05", "split": "dictation", "lang": "en", "text": "Press releases from the university were also analysed.", "route": "dictation"}
+{"id": "dic-06", "split": "dictation", "lang": "en", "text": "Stop words were removed before computing the similarity.", "route": "dictation"}
+{"id": "dic-07", "split": "dictation", "lang": "en", "text": "Copy editing will be done after the second draft.", "route": "dictation"}
+{"id": "dic-08", "split": "dictation", "lang": "en", "text": "Run the analysis again with the corrected data set.", "route": "dictation"}
+{"id": "dic-09", "split": "dictation", "lang": "en", "text": "Pasta is the most popular dish among the participants.", "route": "dictation"}
+{"id": "dic-10", "split": "dictation", "lang": "en", "text": "Jarvis is the assistant in the Iron Man films.", "route": "dictation"}
+{"id": "dic-11", "split": "dictation", "lang": "en", "text": "Minimize the cognitive load by reducing the number of steps.", "route": "dictation"}
+{"id": "dic-12", "split": "dictation", "lang": "en", "text": "Switch to the second condition after the break.", "route": "dictation"}
+{"id": "dic-13", "split": "dictation", "lang": "en", "text": "Mute participants could not complete the voice condition.", "route": "dictation"}
+{"id": "dic-14", "split": "dictation", "lang": "en", "text": "Go back to the previous section and rewrite the introduction.", "route": "dictation"}
+{"id": "dic-15", "split": "dictation", "lang": "en", "text": "Scroll down to the results to see the latency distribution.", "route": "dictation"}
+{"id": "dic-16", "split": "dictation", "lang": "el", "text": "Άνοιξε το παράθυρο γιατί κάνει ζέστη στην αίθουσα.", "route": "dictation"}
+{"id": "dic-17", "split": "dictation", "lang": "el", "text": "Ψάξε λίγο στη βιβλιογραφία για παρόμοιες μελέτες.", "route": "dictation"}
+{"id": "dic-18", "split": "dictation", "lang": "el", "text": "Κλείσε το ραντεβού με τον επιβλέποντα για την Τρίτη.", "route": "dictation"}
+{"id": "dic-19", "split": "dictation", "lang": "el", "text": "Γράψε μου ένα μήνυμα όταν φτάσεις στην Πάτρα.", "route": "dictation"}
+{"id": "dic-20", "split": "dictation", "lang": "el", "text": "Πάτα γκάζι γιατί θα αργήσουμε στο μάθημα.", "route": "dictation"}
+{"id": "dic-21", "split": "dictation", "lang": "el", "text": "Βρες χρόνο να διαβάσεις το τρίτο κεφάλαιο.", "route": "dictation"}
+{"id": "dic-22", "split": "dictation", "lang": "el", "text": "Η πάστα σοκολάτα ήταν πολύ νόστιμη χθες.", "route": "dictation"}
+{"id": "dic-23", "split": "dictation", "lang": "el", "text": "Πάστα φλώρα θα φτιάξουμε για το πάρτι.", "route": "dictation"}
+{"id": "dic-24", "split": "dictation", "lang": "el", "text": "Βάστα λίγο ακόμα, σχεδόν τελειώσαμε.", "route": "dictation"}
+{"id": "dic-25", "split": "dictation", "lang": "el", "text": "Σταμάτα να ανησυχείς για την παρουσίαση.", "route": "dictation"}
+{"id": "dic-26", "split": "dictation", "lang": "el", "text": "Πήγαινε στο εργαστήριο και ζήτα τα δεδομένα.", "route": "dictation"}
+{"id": "dic-27", "split": "dictation", "lang": "el", "text": "Αποθήκευσε τις αλλαγές σου πριν φύγεις, είπε ο καθηγητής.", "route": "dictation"}
+{"id": "dic-28", "split": "dictation", "lang": "el", "text": "Παίξε μπάλα με τα παιδιά το απόγευμα.", "route": "dictation"}
+{"id": "dic-29", "split": "dictation", "lang": "el", "text": "Τρέξε τα πειράματα ξανά με περισσότερους συμμετέχοντες.", "route": "dictation"}
+{"id": "dic-30", "split": "dictation", "lang": "el", "text": "Αντέγραψε τις σημειώσεις από τον πίνακα.", "route": "dictation"}
