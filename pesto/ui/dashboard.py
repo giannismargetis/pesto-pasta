@@ -354,7 +354,7 @@ class Dashboard(QMainWindow):
         loads = ", ".join(f"{k} {v:.1f} s" for k, v in a.engines.load_seconds.items()) or "not loaded yet"
         db_mb = paths.DB_PATH.stat().st_size / 2**20 if paths.DB_PATH.exists() else 0
         lines = [
-            f"<b>Microphone</b>: {a.session.mic.device_name or 'unavailable'}",
+            f"<b>Microphone</b>: {a.session.mic.device_name or 'not available — ' + (a.session.mic.error or 'unknown')}",
             f"<b>Engine</b>: {a.engines.active_name} · state {a.engines.state} · device {a.engines.device}",
             f"<b>Model load time</b>: {loads}",
             f"<b>GPU</b>: {snap.name if snap.available else 'none detected'}"

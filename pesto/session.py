@@ -113,14 +113,26 @@ class VoiceSession:
     def start(self, preload: bool = True) -> None:
         threading.Thread(target=self._worker, name="AsrWorker", daemon=True).start()
         threading.Thread(target=self._preview_ticker, name="PreviewTicker", daemon=True).start()
-        try:
-            self.mic.start()
-        except Exception as exc:
-            log.error("Microphone unavailable: %s", exc)
-            self.bus.publish(Status(Phase.FAILED, message="Microphone unavailable", detail=str(exc)))
+        if not self.mic.ensure_open():
+            self.bus.publish(Status(Phase.FAILED, message="No microphone found",
+                                    detail="connect or switch on your microphone — PESTO will pick it up"))
+        threading.Thread(target=self._mic_watchdog, name="MicWatchdog", daemon=True).start()
         if preload:
             self.submit_control(self.engines.ensure_loaded)
         self._publish_settings()
+
+    def _mic_watchdog(self) -> None:
+        """Recover automatically when a microphone appears or comes back."""
+        was_open = self.mic.is_open
+        while not self._stop.wait(3.0):
+            if self._current is not None:
+                continue
+            ok = self.mic.ensure_open()
+            if ok != was_open:
+                was_open = ok
+                if ok:
+                    self.bus.publish(Status(Phase.DONE, message="Microphone connected", detail=self.mic.device_name))
+                self._publish_settings()
 
     def stop(self) -> None:
         self._stop.set()
@@ -203,6 +215,11 @@ class VoiceSession:
 
     def _begin(self, input_mode: str, t: float, recording: Recording | None = None) -> Interaction | None:
         if self._paused or not self.enabled:
+            return None
+        if not self.mic.ensure_open():
+            # Never pretend to listen with a dead microphone.
+            self.bus.publish(Status(Phase.FAILED, message="No microphone",
+                                    detail="connect or switch on your microphone"))
             return None
         hwnd = foreground_window()
         it = Interaction(uuid.uuid4().hex[:12], input_mode, now_iso(), t, target_hwnd=hwnd)

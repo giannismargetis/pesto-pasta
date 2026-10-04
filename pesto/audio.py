@@ -76,23 +76,69 @@ class Microphone:
         self.device_name = ""
 
     # -- lifecycle -------------------------------------------------------------------
+    @property
+    def is_open(self) -> bool:
+        return self._stream is not None and bool(getattr(self._stream, "active", False))
+
     def start(self) -> None:
+        """Open the input stream; raises if no usable microphone exists."""
         import sounddevice as sd
 
         device = self.s.device or None
         if isinstance(device, str) and device.isdigit():
             device = int(device)
+        if device is None:
+            default_in = sd.default.device[0] if sd.default.device is not None else -1
+            if default_in is None or default_in < 0:
+                raise RuntimeError("Windows reports no default microphone (is the headset connected and on?)")
         self._stream = sd.InputStream(
             samplerate=self.s.sample_rate, channels=1, dtype="int16", blocksize=0, latency="low",
-            device=device, callback=self._callback,
+            device=device, callback=self._callback, finished_callback=self._on_finished,
         )
         self._stream.start()
         info = sd.query_devices(self._stream.device)
         self.device_name = info.get("name", "") if isinstance(info, dict) else str(info)
+        self.error = None
         log.info("Microphone open: %s @ %d Hz (input latency %.0f ms)", self.device_name, self.s.sample_rate,
                  self._stream.latency * 1000)
-        if self.on_frames is not None:
+        if self.on_frames is not None and not getattr(self, "_frames_started", False):
+            self._frames_started = True
             threading.Thread(target=self._frames_loop, name="AudioFrames", daemon=True).start()
+
+    def ensure_open(self) -> bool:
+        """Reopen the microphone if it is closed or was unplugged.
+
+        PortAudio enumerates devices only when it initialises, so a headset
+        switched on after start-up is invisible until it is re-initialised.
+        """
+        if self.is_open:
+            return True
+        import sounddevice as sd
+
+        with self._lock:
+            self._recording = None
+        try:
+            if self._stream is not None:
+                try:
+                    self._stream.close()
+                except Exception:
+                    pass
+                self._stream = None
+            sd._terminate()
+            sd._initialize()
+            self.start()
+            return True
+        except Exception as exc:
+            if str(exc) != self.error:
+                log.warning("Microphone unavailable: %s", exc)
+            self.error = str(exc)
+            self.device_name = ""
+            return False
+
+    def _on_finished(self) -> None:
+        if not self._stop.is_set():
+            log.warning("Microphone stream stopped (device unplugged?)")
+            self.error = "microphone disconnected"
 
     def close(self) -> None:
         self._stop.set()

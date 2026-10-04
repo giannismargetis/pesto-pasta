@@ -20,6 +20,14 @@ class FakeMic:
         self.seconds = seconds
         self.rec = None
         self.device_name = "fake"
+        self.available = True
+
+    @property
+    def is_open(self):
+        return self.available
+
+    def ensure_open(self):
+        return self.available
 
     def start(self):
         pass
@@ -204,3 +212,14 @@ def test_live_preview_publishes_text(rig):
     s.on_ptt("release", time.perf_counter())
     assert wait_until(lambda: rig["tel"].rows)
     assert rig["tel"].rows[0]["preview_count"] >= 1
+
+
+def test_missing_microphone_is_reported_not_faked(rig):
+    """With no microphone a press must say so, never show 'listening' then 'too short'."""
+    rig["s"].mic.available = False
+    dictate(rig["s"])
+    time.sleep(0.2)
+    phases = [st.phase for st in rig["st"]]
+    assert Phase.LISTENING not in phases and Phase.EMPTY not in phases
+    assert phases and phases[-1] == Phase.FAILED and "microphone" in rig["st"][-1].message.lower()
+    assert rig["tel"].rows == []
