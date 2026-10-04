@@ -1,5 +1,7 @@
 # PESTO + PASTA
 
+> 🇬🇷 Τεκμηρίωση στα ελληνικά: [docs/el/README.md](docs/el/README.md)
+
 **PESTO** is fully local, bilingual (Greek/English) push-to-talk speech input for
 Windows: hold a key, speak, release, and the text appears wherever the cursor is.
 **PASTA** extends it with voice commands ("Πάστα, άνοιξε το Chrome και ψάξε …")
