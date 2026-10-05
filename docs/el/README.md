@@ -10,6 +10,30 @@
 
 ---
 
+## 🎬 Ζωντανή Επίδειξη (Video Demo)
+
+Δείτε το **PESTO** (φωνητική πληκτρολόγηση πραγματικού χρόνου σε ελληνικά και αγγλικά) και το **PASTA** (τοπικός πράκτορας φωνητικών εντολών και αυτοματισμού Windows) σε πραγματική δράση:
+
+<p align="center">
+  <a href="../../PESTO_PASTA.mp4" title="Κάντε κλικ για προβολή του βίντεο σε πλήρη ανάλυση 1080p">
+    <img src="../img/demo-preview.gif" alt="PESTO + PASTA Live Demonstration" width="100%" style="border-radius: 8px;">
+  </a>
+</p>
+
+<p align="center">
+  <a href="../../PESTO_PASTA.mp4">
+    <img src="https://img.shields.io/badge/▶%20Προβολή%20Βίντεο-1080p%20HD-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Προβολή Demo">
+  </a>
+  &nbsp;
+  <a href="../../PESTO_PASTA.mp4">
+    <img src="https://img.shields.io/badge/Αρχείο-PESTO__PASTA.mp4-blue?style=for-the-badge&logo=quicktime&logoColor=white" alt="Αναπαραγωγή MP4">
+  </a>
+</p>
+
+> 💡 **Σημείωση:** Κάντε κλικ στην παραπάνω προεπισκόπηση ή [ανοίξτε το `PESTO_PASTA.mp4`](../../PESTO_PASTA.mp4) για να παρακολουθήσετε το πλήρες βίντεο με ήχο.
+
+---
+
 ## 📸 Οπτική Περιήγηση & Διεπαφή Χρήστη
 
 ### Η Κάψουλα Κατάστασης (HUD) του PESTO
