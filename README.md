@@ -16,27 +16,13 @@ Both run **100% offline** on local GPU hardware after model caching. This reposi
 
 ---
 
-## 🎬 Live Demonstration
+## 🎬 60-Second Showcase
 
 Experience **PESTO** (real-time Greek & English push-to-talk voice typing) and **PASTA** (local desktop voice commands and UI automation) in action:
 
 <p align="center">
-  <a href="PESTO_PASTA.mp4" title="Click to watch the full 1080p video demo">
-    <img src="docs/img/demo-preview.gif" alt="PESTO + PASTA Live Demonstration" width="100%" style="border-radius: 8px;">
-  </a>
+  <img src="docs/promo/PESTO_PASTA_showcase.gif" alt="PESTO + PASTA 60s Showcase" width="100%" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
 </p>
-
-<p align="center">
-  <a href="PESTO_PASTA.mp4">
-    <img src="https://img.shields.io/badge/▶%20Watch%20Full%20Demo-1080p%20HD%20(DaVinci%20Master)-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch Demo">
-  </a>
-  &nbsp;
-  <a href="PESTO_PASTA.mp4">
-    <img src="https://img.shields.io/badge/File-PESTO__PASTA.mp4-blue?style=for-the-badge&logo=quicktime&logoColor=white" alt="Play MP4">
-  </a>
-</p>
-
-> 💡 **Tip:** Click the preview above or [open `PESTO_PASTA.mp4`](PESTO_PASTA.mp4) directly to watch the full 1080p demonstration video with audio.
 
 ---
 

@@ -47,3 +47,7 @@ scripts/explorer_template.html
 scripts/check_explorer.py
 scripts/_stop_server.py
 scripts/_fixup.py
+
+# Editor & large promotional video exports
+.claude/
+docs/promo/*.mp4

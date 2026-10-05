@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PESTO + PASTA — 60s Showcase</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Segoe UI",system-ui,sans-serif;color:#fff}
+  #stage{position:fixed;inset:0;display:grid;place-items:center}
+  canvas{width:min(100vw,177.7778vh);height:min(56.25vw,100vh);display:block;background:#06080a}
+  #gate{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#10190f,#050607 70%);cursor:pointer;z-index:5;transition:opacity .5s}
+  #gate.off{opacity:0;pointer-events:none}
+  #gate h1{margin:0;font:900 clamp(40px,8vw,120px)/1 "Segoe UI Black","Arial Black",sans-serif;letter-spacing:-.02em;
+    background:linear-gradient(90deg,#8fe04a,#ffb02e);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #gate p{margin:18px 0 0;font-size:clamp(14px,1.6vw,22px);letter-spacing:.35em;color:#9aa;text-align:center}
+  #gate .go{margin-top:36px;display:inline-block;padding:16px 44px;border:2px solid #8fe04a;border-radius:999px;color:#8fe04a;font-weight:700;letter-spacing:.3em;animation:pl 1.2s infinite}
+  @keyframes pl{50%{box-shadow:0 0 40px #8fe04a66;transform:scale(1.04)}}
+  #hint{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);font:12px Consolas,monospace;color:#789;opacity:0;transition:opacity .6s;z-index:4;white-space:nowrap}
+  #hint.on{opacity:.8}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<div id="gate"><div style="text-align:center"><h1>PESTO + PASTA</h1><p>60-SECOND SHOWCASE · SOUND ON</p><span class="go">CLICK TO PLAY</span></div></div>
+<div id="hint">SPACE pause · ←/→ seek · R restart · M mute · F fullscreen · E export WebM</div>
+
+<script>
+"use strict";
+/* ============================================================
+   PESTO + PASTA — 60 s kinetic showcase
+   Fully deterministic: render(t) draws any frame of the timeline.
+   ============================================================ */
+const W = 1920, H = 1080, DUR = 60;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const SANS = '"Segoe UI Black","Arial Black","Segoe UI",sans-serif';
+const UI = '"Segoe UI","Helvetica Neue",Arial,sans-serif';
+const MONO = 'Consolas,"Cascadia Mono",monospace';
+const GREEN = '#8fe04a', ORANGE = '#ffb02e', CYAN = '#3de5ff', RED = '#ff4d5e', AMBER = '#ffc83d', INK = '#06080a';
+const BPM = 128, BEAT = 60 / BPM;
+
+/* ---------- math helpers ---------- */
+const c01 = x => Math.max(0, Math.min(1, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const seg = (t, a, b) => c01((t - a) / (b - a));
+const outCubic = x => 1 - Math.pow(1 - x, 3);
+const outExpo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const outBack = x => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const inOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const smooth = x => x * x * (3 - 2 * x);
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const R = rng(20261004);
+
+/* ---------- drawing helpers ---------- */
+function T(s, x, y, o = {}) {
+  const { size = 60, color = '#fff', align = 'center', weight = 800, font = SANS, alpha = 1, ls = 0, glitch = 0, shadow = null, base = 'middle', stroke = null } = o;
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.font = `${weight} ${size}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = base;
+  if ('letterSpacing' in ctx) ctx.letterSpacing = ls + 'px';
+  if (shadow) { ctx.shadowColor = shadow; ctx.shadowBlur = size * .45; }
+  if (glitch > 0) {
+    const g = glitch * size * .07;
+    ctx.fillStyle = RED; ctx.fillText(s, x - g, y);
+    ctx.fillStyle = CYAN; ctx.fillText(s, x + g, y);
+  }
+  if (stroke) { ctx.lineWidth = stroke.w; ctx.strokeStyle = stroke.c; ctx.strokeText(s, x, y); }
+  ctx.fillStyle = color; ctx.fillText(s, x, y);
+  ctx.restore();
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function card(x, y, w, h, o = {}) {
+  const { fill = 'rgba(14,20,24,.88)', stroke = 'rgba(255,255,255,.14)', glow = null, r = 28, lw = 2 } = o;
+  ctx.save();
+  if (glow) { ctx.shadowColor = glow; ctx.shadowBlur = 40; }
+  rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill();
+  ctx.shadowBlur = 0; ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke();
+  ctx.restore();
+}
+function withTransform(cx, cy, sc, rot, fn) { ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(sc, sc); fn(); ctx.restore(); }
+function key(label, cx, cy, w, h, pressed, col) {
+  const dy = pressed ? 10 : 0;
+  ctx.save();
+  rr(cx - w / 2, cy - h / 2 + 14, w, h, 24); ctx.fillStyle = '#000'; ctx.fill();
+  if (pressed) { ctx.shadowColor = col; ctx.shadowBlur = 70; }
+  rr(cx - w / 2, cy - h / 2 + dy, w, h - (pressed ? 0 : 10), 24);
+  ctx.fillStyle = pressed ? col : '#1b242b'; ctx.fill();
+  ctx.shadowBlur = 0; ctx.lineWidth = 3; ctx.strokeStyle = pressed ? '#fff' : '#3a4852'; ctx.stroke();
+  ctx.restore();
+  T(label, cx, cy + dy - 4, { size: h * .26, color: pressed ? '#0a1208' : '#cfe', font: UI, weight: 800, ls: 2 });
+}
+function pill(txt, x, y, col, o = {}) {
+  const { size = 30, padX = 26, h = 56, fillA = .16, align = 'center' } = o;
+  ctx.save(); ctx.font = `800 ${size}px ${UI}`;
+  const w = ctx.measureText(txt).width + padX * 2 + (('letterSpacing' in ctx) ? 0 : 0);
+  ctx.restore();
+  const x0 = align === 'center' ? x - w / 2 : x;
+  ctx.save();
+  rr(x0, y - h / 2, w, h, h / 2); ctx.fillStyle = col + '28'; ctx.fill();
+  ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.stroke(); ctx.restore();
+  T(txt, x0 + w / 2, y + 1, { size, color: col, font: UI, weight: 800 });
+  return w;
+}
+function typed(str, p) { return str.slice(0, Math.floor(str.length * c01(p))); }
+function pulse(t, rate = 1) { const ph = (t / (BEAT * rate)) % 1; return Math.exp(-ph * 5); }
+function hexA(h, a) { return h + Math.round(c01(a) * 255).toString(16).padStart(2, '0'); }
+
+/* ---------- scene table ---------- */
+const SCENES = [
+  { s: 0, e: 4, name: '01 · INTRO', col: GREEN },
+  { s: 4, e: 10, name: '02 · PESTO', col: GREEN },
+  { s: 10, e: 16, name: '03 · BILINGUAL', col: CYAN },
+  { s: 16, e: 23, name: '04 · SPEED', col: GREEN },
+  { s: 23, e: 31, name: '05 · PASTA', col: ORANGE },
+  { s: 31, e: 37, name: '06 · SAFETY', col: AMBER },
+  { s: 37, e: 43, name: '07 · VERIFIED', col: GREEN },
+  { s: 43, e: 48, name: '08 · OFFLINE', col: CYAN },
+  { s: 48, e: 54, name: '09 · NUMBERS', col: ORANGE },
+  { s: 54, e: 60, name: '10 · FINALE', col: GREEN },
+];
+const sceneAt = t => SCENES.find(s => t >= s.s && t < s.e) || SCENES[SCENES.length - 1];
+
+/* ---------- background ---------- */
+const dust = Array.from({ length: 140 }, () => ({ x: R() * W, y: R() * H, z: .3 + R() * .9, p: R() * 6 }));
+function bg(t, sc) {
+  ctx.fillStyle = INK; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, H * .45, 80, W / 2, H * .45, 1100);
+  g.addColorStop(0, hexA(sc.col, .16 + pulse(t) * .06)); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // perspective grid floor
+  ctx.save(); ctx.strokeStyle = hexA(sc.col, .16); ctx.lineWidth = 1.5;
+  const hz = 640;
+  ctx.beginPath();
+  for (let i = -16; i <= 16; i++) { ctx.moveTo(W / 2 + i * 40, hz); ctx.lineTo(W / 2 + i * 340, H); }
+  const off = (t * .7) % 1;
+  for (let k = 0; k < 14; k++) { const f = (k + off) / 14, y = hz + (H - hz) * f * f; ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke(); ctx.restore();
+  // dust
+  ctx.save();
+  for (const d of dust) {
+    const y = ((d.y - t * 24 * d.z) % H + H) % H, x = d.x + Math.sin(t * .6 + d.p) * 18;
+    ctx.globalAlpha = .12 + .25 * d.z * (.5 + .5 * Math.sin(t * 2 + d.p));
+    ctx.fillStyle = d.z > 1 ? ORANGE : GREEN;
+    ctx.fillRect(x, y, 2.5 * d.z, 2.5 * d.z);
+  }
+  ctx.restore();
+}
+
+/* ============================================================
+   SCENE 1 — INTRO (particles → logo)
+   ============================================================ */
+const logoPts = (() => {
+  const o = document.createElement('canvas'); o.width = 1920; o.height = 360; const g = o.getContext('2d');
+  g.font = `900 210px ${SANS}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff';
+  g.fillText('PESTO + PASTA', 960, 180);
+  const d = g.getImageData(0, 0, 1920, 360).data, pts = [];
+  for (let y = 0; y < 360; y += 6) for (let x = 0; x < 1920; x += 6) if (d[(y * 1920 + x) * 4 + 3] > 140) pts.push({ x, y: y + 210, sx: R() * W, sy: R() * H, dl: R() * .9, a: R() * 6.28 });
+  return pts;
+})();
+function sceneIntro(lt) {
+  const grad = ctx.createLinearGradient(260, 0, 1660, 0); grad.addColorStop(0, GREEN); grad.addColorStop(1, ORANGE);
+  const ex = Math.max(0, lt - 3.45);
+  for (const p of logoPts) {
+    const q = outExpo(c01((lt - .05 - p.dl) / 1.3));
+    let x = lerp(p.sx, p.x, q), y = lerp(p.sy, p.y, q);
+    if (q >= 1) { x += Math.sin(lt * 8 + p.a) * 1.2; y += Math.cos(lt * 7 + p.a) * 1.2; }
+    if (ex > 0) { x += Math.cos(p.a) * ex * ex * 1700; y += Math.sin(p.a) * ex * ex * 1700; }
+    const f = p.x / W;
+    ctx.fillStyle = f < .46 ? GREEN : ORANGE;
+    ctx.globalAlpha = lt > 2.3 ? 1 - smooth(seg(lt, 2.3, 2.8)) * .75 : .95;
+    const s = 4.5 - q * 1.5;
+    ctx.fillRect(x, y, s, s);
+  }
+  ctx.globalAlpha = 1;
+  const a = smooth(seg(lt, 2.0, 2.6)) * (1 - seg(lt, 3.5, 3.9));
+  if (a > 0) {
+    ctx.save(); ctx.globalAlpha = a; ctx.shadowColor = GREEN; ctx.shadowBlur = 20;
+    T('PESTO + PASTA', W / 2, 390, { size: 210, color: grad, glitch: Math.max(0, .9 - (lt - 2.0) * 1.2) + (pulse(lt) * .12) });
+    ctx.restore();
+  }
+  const sub = outCubic(seg(lt, 2.4, 3.2)) * (1 - seg(lt, 3.5, 3.9));
+  T('VOICE  ·  LOCAL  ·  GREEK + ENGLISH', W / 2, 590, { size: 40, color: '#cfe', font: UI, weight: 700, ls: 14 + (1 - sub) * 40, alpha: sub });
+  T('ΦΩΝΗ  ΧΩΡΙΣ  ΣΥΝΔΕΣΗ', W / 2, 660, { size: 30, color: ORANGE, font: UI, weight: 700, ls: 18, alpha: sub * .9 });
+  // scanning line
+  if (lt < 2.4) { ctx.fillStyle = hexA(GREEN, .55); ctx.fillRect(0, lerp(0, H, lt / 2.4), W, 3); }
+}
+
+/* ============================================================
+   SCENE 2 — PESTO: hold, speak, release
+   ============================================================ */
+function waveform(cx, cy, w, amp, t, col, n = 56) {
+  const bw = w / n;
+  for (let i = 0; i < n; i++) {
+    const env = Math.sin(i / n * Math.PI);
+    const v = (.35 + .65 * Math.abs(Math.sin(t * 9 + i * .7) * Math.cos(t * 5.3 + i * .31))) * env * amp;
+    const hh = 6 + v * 260;
+    ctx.fillStyle = col; ctx.globalAlpha = .55 + v * .45;
+    rr(cx - w / 2 + i * bw + 3, cy - hh / 2, bw - 6, hh, 6); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function scenePesto(lt) {
+  const words = ['HOLD.', 'SPEAK.', 'RELEASE.'], cols = [GREEN, CYAN, ORANGE];
+  for (let i = 0; i < 3; i++) {
+    const st = i * .55, q = seg(lt, st, st + .35);
+    if (q <= 0) continue;
+    const sc = lerp(2.6, 1, outBack(q)), x = 400 + i * 560;
+    T(words[i], x, 190, { size: 128 * sc, color: cols[i], alpha: q, glitch: 1 - q, shadow: cols[i] });
+  }
+  const held = lt >= .8 && lt < 2.9;
+  const kx = 440, ky = 560;
+  const hp = held ? 1 : 0;
+  if (held) for (let i = 0; i < 3; i++) {
+    const ph = ((lt - .8) * 1.1 + i / 3) % 1;
+    ctx.strokeStyle = hexA(GREEN, 1 - ph); ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(kx, ky + 8, 150 + ph * 250, 0, 6.283); ctx.stroke();
+  }
+  key('R CTRL', kx, ky, 300, 170, held, GREEN);
+  T(held ? 'LISTENING…' : lt < .8 ? 'PRESS & HOLD' : '', kx, ky + 150, { size: 30, color: held ? GREEN : '#789', font: UI, ls: 8, weight: 700 });
+  // waveform / spinner
+  const wx = 1200, wy = 560;
+  if (held) {
+    waveform(wx, wy, 860, smooth(seg(lt, .8, 1.2)) * (.6 + .4 * Math.sin(lt * 4) ** 2), lt, GREEN);
+    T('● REC', 800, 420, { size: 28, color: RED, font: UI, align: 'left', weight: 800, alpha: .5 + .5 * Math.sin(lt * 12) ** 2 });
+    T('EL / EN · auto', 1620, 420, { size: 28, color: CYAN, font: MONO, align: 'right', weight: 700 });
+  } else if (lt >= 2.9 && lt < 3.4) {
+    const a = (lt - 2.9) * 14;
+    ctx.strokeStyle = ORANGE; ctx.lineWidth = 14; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(wx, wy, 90, a, a + 4.2); ctx.stroke();
+    T('TRANSCRIBING', wx, wy + 160, { size: 28, color: ORANGE, font: UI, ls: 10, weight: 700 });
+  }
+  // text box
+  const bx = 260, by = 790, bw = 1400, bh = 130;
+  card(bx, by, bw, bh, { stroke: lt > 3.3 ? GREEN : 'rgba(255,255,255,.18)', glow: lt > 3.3 ? hexA(GREEN, .5) : null, r: 20 });
+  T('notes.txt — Notepad', bx + 24, by - 28, { size: 22, color: '#789', font: MONO, align: 'left', weight: 400 });
+  const msg = 'Καλημέρα κόσμε — hello world, typed anywhere.';
+  const shown = typed(msg, seg(lt, 3.3, 4.2));
+  const caret = (Math.floor(lt * 3) % 2 === 0 || lt < 4.4) ? '▌' : ' ';
+  T(shown + (lt > 3.2 ? caret : ''), bx + 36, by + bh / 2, { size: 54, color: '#e8fff0', font: UI, align: 'left', weight: 600 });
+  if (lt >= 3.4) {
+    const q = outBack(seg(lt, 3.4, 3.75));
+    withTransform(1500, 735, q, -.05, () => pill('286 ms', 0, 0, GREEN, { size: 40, h: 72, padX: 34 }));
+  }
+  if (lt > 4.5) T('NO MOUSE. NO WINDOW SWITCH. JUST TEXT.', W / 2, 990, { size: 34, color: '#cfe', font: UI, ls: 10, weight: 700, alpha: seg(lt, 4.5, 4.9) });
+}
+
+/* ============================================================
+   SCENE 3 — BILINGUAL
+   ============================================================ */
+const GREEK = ['καλημέρα', 'ευχαριστώ', 'πρωτόκολλο', 'υπολογιστής', 'φωνή', 'γρήγορα', 'ταχύτητα', 'πάστα', 'ανοιχτό', 'σχέδιο', 'αλήθεια', 'ελευθερία'];
+const ENG = ['latency', 'dictation', 'offline', 'whisper', 'instant', 'command', 'privacy', 'GPU', 'accuracy', 'pipeline', 'verified', 'local'];
+function marquee(words, y, speed, dir, col, size, t) {
+  ctx.save(); ctx.font = `800 ${size}px ${SANS}`;
+  const gap = 90, widths = words.map(w => ctx.measureText(w).width + gap), total = widths.reduce((a, b) => a + b, 0);
+  ctx.restore();
+  let x = ((t * speed * dir) % total + total) % total - total;
+  for (let rep = 0; rep < 3; rep++) {
+    let xx = x + rep * total;
+    for (let i = 0; i < words.length; i++) {
+      if (xx > -500 && xx < W + 100) T(words[i], xx, y, { size, color: i % 3 === 0 ? col : hexA(col, .28), align: 'left', ls: 2 });
+      xx += widths[i];
+    }
+  }
+}
+function sceneBilingual(lt) {
+  const t = lt + 10;
+  marquee(GREEK, 150, 340, -1, ORANGE, 120, t);
+  marquee(ENG, 950, 420, 1, CYAN, 120, t);
+  const items = [
+    { x: 520, v: 12.28, label: 'GREEK WER', sub: 'Σ  final sigma · accents', col: ORANGE, st: .5 },
+    { x: 1400, v: 5.52, label: 'ENGLISH WER', sub: 'FLEURS · 200 + 200 utterances', col: CYAN, st: .9 },
+  ];
+  for (const it of items) {
+    const q = outBack(seg(lt, it.st, it.st + .5));
+    if (q <= 0) continue;
+    withTransform(it.x, 540, q, 0, () => {
+      card(-340, -230, 680, 460, { glow: hexA(it.col, .45), stroke: it.col });
+      const n = it.v * outCubic(seg(lt, it.st + .1, it.st + 1.6));
+      T(n.toFixed(2) + '%', 0, -60, { size: 150, color: '#fff', shadow: it.col });
+      T(it.label, 0, 60, { size: 46, color: it.col, font: UI, ls: 10, weight: 800 });
+      T(it.sub, 0, 130, { size: 26, color: '#9ab', font: UI, weight: 500 });
+    });
+  }
+  if (lt > 2.2) {
+    const q = outBack(seg(lt, 2.2, 2.7));
+    withTransform(W / 2, 540, q, 0, () => {
+      ctx.beginPath(); ctx.arc(0, 0, 70, 0, 6.283); ctx.fillStyle = '#0c1115'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = GREEN; ctx.stroke();
+      T('⇄', 0, -4, { size: 70, color: GREEN, font: UI });
+    });
+  }
+  if (lt > 3.2) {
+    const a = seg(lt, 3.2, 3.7);
+    pill('WHISPER LARGE-V3-TURBO', W / 2, 800, GREEN, { size: 30 });
+    ctx.globalAlpha = a;
+    T('ONE MODEL · TWO LANGUAGES · ZERO SWITCHING', W / 2, 870, { size: 32, color: '#cfe', font: UI, ls: 8, weight: 700, alpha: a });
+    ctx.globalAlpha = 1;
+  }
+  if (lt > 4.3) {
+    const sw = (Math.floor((lt - 4.3) / .45) % 3);
+    ['AUTO', 'ΕΛΛΗΝΙΚΑ', 'ENGLISH'].forEach((n, i) => pill(n, 700 + i * 260, 262, i === sw ? GREEN : '#567', { size: 26, h: 50 }));
+  }
+}
+
+/* ============================================================
+   SCENE 4 — SPEED
+   ============================================================ */
+function sceneSpeed(lt) {
+  T('FASTER THAN YOU CAN FINISH THE SENTENCE', W / 2, 150, { size: 50, color: '#fff', font: UI, ls: 6, weight: 800, alpha: outCubic(seg(lt, 0, .5)) });
+  const rows = [
+    { label: 'PESTO v2 baseline', ms: 804, col: RED },
+    { label: 'PESTO v3 · Whisper', ms: 450, col: GREEN },
+    { label: 'Parakeet TDT · EN', ms: 124, col: CYAN },
+  ];
+  const clock = outCubic(seg(lt, .4, 2.8)) * 850, x0 = 470, k = 1.2;
+  rows.forEach((r, i) => {
+    const y = 300 + i * 125, fill = Math.min(r.ms, clock), done = clock >= r.ms;
+    T(r.label, x0 - 30, y, { size: 36, color: '#cfe', font: UI, align: 'right', weight: 700 });
+    rr(x0, y - 34, 1000 * 1.2 + 0, 68, 14); ctx.fillStyle = 'rgba(255,255,255,.05)'; ctx.fill();
+    ctx.save(); ctx.shadowColor = r.col; ctx.shadowBlur = done ? 40 : 18;
+    rr(x0, y - 34, Math.max(2, fill * k), 68, 14); ctx.fillStyle = r.col; ctx.fill(); ctx.restore();
+    T(Math.round(fill) + ' ms', x0 + fill * k + 22, y, { size: 52, color: '#fff', font: MONO, align: 'left', weight: 800 });
+  });
+  if (lt > 3) {
+    const q = outBack(seg(lt, 3, 3.4));
+    withTransform(W / 2, 700, q, -.02, () => {
+      T('−351 ms', -210, 0, { size: 150, color: GREEN, shadow: GREEN, glitch: Math.max(0, 1 - (lt - 3) * 3) });
+      T('MEDIAN LATENCY CUT', 260, -22, { size: 36, color: '#fff', font: UI, ls: 6, align: 'left', weight: 800 });
+      T('3 s utterance · ABBA paired test', 260, 26, { size: 26, color: '#9ab', font: UI, align: 'left', weight: 500 });
+    });
+  }
+  const cards = [
+    { x: 400, big: '8.1 s → 4.4 s', sub: 'cold start to first text', col: ORANGE },
+    { x: 960, big: '~4 ms', sub: 'Silero VAD speech gate', col: CYAN },
+    { x: 1520, big: 'p < 10⁻¹⁵', sub: 'Wilcoxon · 100 paired clips', col: GREEN },
+  ];
+  cards.forEach((c, i) => {
+    const q = outBack(seg(lt, 4.1 + i * .3, 4.6 + i * .3)); if (q <= 0) return;
+    withTransform(c.x, 880, q, 0, () => {
+      card(-250, -100, 500, 200, { stroke: c.col, glow: hexA(c.col, .35), r: 24 });
+      T(c.big, 0, -22, { size: 62, color: '#fff', shadow: c.col });
+      T(c.sub, 0, 52, { size: 26, color: c.col, font: UI, weight: 700 });
+    });
+  });
+}
+
+/* ============================================================
+   SCENE 5 — PASTA pipeline
+   ============================================================ */
+const NODES = [
+  { ic: '🎙', n: 'ROUTER', s: 'wake word' },
+  { ic: '⚡', n: 'GRAMMAR', s: '< 0.1 ms' },
+  { ic: '🧭', n: 'PLANNER', s: 'live desktop' },
+  { ic: '🛡', n: 'SAFETY', s: 'auto' },
+  { ic: '⚙', n: 'EXECUTOR', s: 'UI Automation' },
+  { ic: '✔', n: 'VERIFY', s: 'observed' },
+];
+function scenePasta(lt) {
+  T('PASTA', 220, 130, { size: 90, color: ORANGE, align: 'left', shadow: ORANGE, alpha: outCubic(seg(lt, 0, .4)) });
+  T('voice → action, verified', 600, 140, { size: 38, color: '#cfe', font: UI, align: 'left', weight: 600, alpha: seg(lt, .3, .8) });
+  const phrase = '«Πάστα, άνοιξε το Spotify»';
+  const ps = typed(phrase, seg(lt, .4, 1.7));
+  card(380, 220, 1160, 120, { stroke: ORANGE, glow: hexA(ORANGE, .4), r: 60 });
+  T(ps + (lt < 2 ? '▌' : ''), W / 2, 281, { size: 62, color: '#fff', font: UI, weight: 700 });
+  T('🎙', 450, 281, { size: 50, font: UI, alpha: .5 + .5 * Math.sin(lt * 10) ** 2 * (lt < 1.8 ? 1 : 0) });
+  // pipeline
+  const xs = NODES.map((_, i) => 260 + i * 280), y = 560;
+  const pk = seg(lt, 1.8, 6.0);
+  const packetX = lerp(xs[0], xs[5], pk);
+  ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,.12)';
+  ctx.beginPath(); ctx.moveTo(xs[0], y); ctx.lineTo(xs[5], y); ctx.stroke();
+  ctx.strokeStyle = ORANGE; ctx.shadowColor = ORANGE; ctx.shadowBlur = 24;
+  ctx.beginPath(); ctx.moveTo(xs[0], y); ctx.lineTo(packetX, y); ctx.stroke(); ctx.shadowBlur = 0;
+  NODES.forEach((nd, i) => {
+    const at = 1.8 + i * .84, act = lt >= at, q = outBack(seg(lt, at - .2, at + .3)), flash = Math.exp(-(lt - at) * 4) * (lt >= at ? 1 : 0);
+    const last = i === 5, col = last ? GREEN : ORANGE;
+    withTransform(xs[i], y, .8 + .2 * q + flash * .18, 0, () => {
+      if (act) { ctx.shadowColor = col; ctx.shadowBlur = 40 + flash * 60; }
+      ctx.beginPath(); ctx.arc(0, 0, 70, 0, 6.283); ctx.fillStyle = act ? '#17120a' : '#0d1216'; ctx.fill();
+      ctx.lineWidth = 5; ctx.strokeStyle = act ? col : '#2b3a44'; ctx.stroke(); ctx.shadowBlur = 0;
+      T(nd.ic, 0, 2, { size: 54, font: UI, alpha: act ? 1 : .35 });
+    });
+    T(nd.n, xs[i], y + 115, { size: 28, color: act ? '#fff' : '#567', font: UI, ls: 4, weight: 800 });
+    if (act) T(nd.s, xs[i], y + 152, { size: 26, color: col, font: MONO, weight: 700, alpha: seg(lt, at, at + .3) });
+  });
+  if (lt >= 2.2) { // moving packet
+    ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 30; ctx.fillStyle = '#fff';
+    if (pk < 1) { ctx.beginPath(); ctx.arc(packetX, y, 13, 0, 6.283); ctx.fill(); } ctx.restore();
+  }
+  // intent JSON
+  if (lt >= 3.2) {
+    const j = ['{', '  "intent": "app.open",', '  "target": "Spotify",', '  "safety": "auto",', '  "parse_ms": 0.06', '}'];
+    const q = seg(lt, 3.2, 5.2);
+    card(520, 790, 880, 250, { fill: 'rgba(8,12,14,.92)', stroke: 'rgba(255,176,46,.5)', r: 18 });
+    const total = j.join('\n').length, shown = typed(j.join('\n'), q).split('\n');
+    shown.forEach((ln, i) => {
+      const colr = /"(intent|target|safety|parse_ms)"/.test(ln) ? ORANGE : '#cfe';
+      T(ln, 570, 830 + i * 36, { size: 29, color: colr, font: MONO, align: 'left', weight: 600 });
+    });
+  }
+  if (lt >= 6.4) {
+    const q = outBack(seg(lt, 6.4, 6.8));
+    withTransform(1560, 910, q, -.08, () => { card(-190, -75, 380, 150, { stroke: GREEN, glow: GREEN, r: 18 }); T('VERIFIED ✓', 0, -14, { size: 50, color: GREEN, shadow: GREEN }); T('Spotify is foreground', 0, 38, { size: 24, color: '#cfe', font: UI, weight: 600 }); });
+  }
+}
+
+/* ============================================================
+   SCENE 6 — SAFETY
+   ============================================================ */
+function sceneSafety(lt) {
+  T('3-TIER SAFETY GATE', W / 2, 135, { size: 90, color: '#fff', glitch: Math.max(0, .8 - lt * 2), alpha: outCubic(seg(lt, 0, .4)) });
+  const cols = [
+    { x: 400, n: 'AUTO', c: GREEN, ex: ['open Chrome', 'volume up', 'switch window'], at: 1.2, tag: 'runs instantly' },
+    { x: 960, n: 'CONFIRM', c: AMBER, ex: ['close all windows', 'sensitive action'], at: 2.6, tag: 'Enter ✓  ·  Esc ✗' },
+    { x: 1520, n: 'REFUSE', c: RED, ex: ['format drive', 'destructive request'], at: 4.0, tag: 'never executed' },
+  ];
+  cols.forEach((c, i) => {
+    const q = outBack(seg(lt, .3 + i * .2, .8 + i * .2)); if (q <= 0) return;
+    const act = lt >= c.at && lt < c.at + 1.4, fl = Math.exp(-(lt - c.at) * 3) * (lt >= c.at ? 1 : 0);
+    const shake = (c.n === 'REFUSE' && lt >= c.at && lt < c.at + .6) ? Math.sin(lt * 70) * 14 * (1 - (lt - c.at) / .6) : 0;
+    withTransform(c.x + shake, 560, q * (1 + fl * .05), 0, () => {
+      card(-230, -250, 460, 500, { stroke: c.c, glow: act || fl > .1 ? c.c : hexA(c.c, .25), fill: act ? hexA(c.c, .14) : 'rgba(14,20,24,.9)' });
+      T(c.n, 0, -170, { size: 70, color: c.c, shadow: c.c });
+      c.ex.forEach((e, k) => T('› ' + e, -180, -70 + k * 62, { size: 32, color: '#dfe', font: MONO, align: 'left', weight: 600 }));
+      T(c.tag, 0, 195, { size: 28, color: c.c, font: UI, ls: 3, weight: 800 });
+    });
+  });
+  // keycaps for confirm
+  if (lt >= 2.6 && lt < 4.0) {
+    const q = outBack(seg(lt, 2.6, 3.0));
+    withTransform(W / 2, 910, q, 0, () => {
+      key('ENTER', -170, 0, 240, 110, lt > 3.2, GREEN); key('ESC', 170, 0, 200, 110, false, RED);
+    });
+    T('«Are you sure?» — say "yes" / «ναι»', W / 2, 1010, { size: 30, color: '#cfe', font: UI, weight: 600 });
+  }
+  if (lt >= 4.0 && lt < 5.4) {
+    const a = seg(lt, 4.0, 4.3);
+    key('ESC', W / 2, 910, 220, 110, lt > 4.1 && lt < 4.4, RED);
+    T('REFUSED', W / 2 + 330, 905, { size: 56, color: RED, shadow: RED, align: 'left', alpha: a });
+  }
+  if (lt >= 5.4) {
+    T('DICTATION TRAPS → 0 / 30 FALSE TRIGGERS', W / 2, 915, { size: 46, color: '#fff', font: UI, ls: 4, weight: 800, alpha: outCubic(seg(lt, 5.4, 5.8)), shadow: GREEN });
+  }
+}
+
+/* ============================================================
+   SCENE 7 — VERIFIED
+   ============================================================ */
+function win(cx, cy, w, h, title, sc, rot, a, content) {
+  ctx.save(); ctx.globalAlpha *= a;
+  ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(sc, sc);
+  ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+  rr(-w / 2, -h / 2, w, h, 18); ctx.fillStyle = '#10171c'; ctx.fill(); ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
+  rr(-w / 2, -h / 2, w, 52, 18); ctx.fillStyle = '#1a242b'; ctx.fill();
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { ctx.beginPath(); ctx.arc(-w / 2 + 30 + i * 28, -h / 2 + 26, 8, 0, 6.283); ctx.fillStyle = c; ctx.fill(); });
+  T(title, 0, -h / 2 + 27, { size: 22, color: '#9ab', font: UI, weight: 600 });
+  ctx.translate(-w / 2, -h / 2 + 52); content(w, h - 52);
+  ctx.restore();
+}
+function sceneVerified(lt) {
+  T('VERIFIED, NOT ASSUMED', W / 2, 120, { size: 84, color: '#fff', alpha: outCubic(seg(lt, 0, .4)), glitch: Math.max(0, .8 - lt * 2) });
+  const defs = [
+    { x: 420, y: 520, w: 560, h: 400, title: 'Chrome', st: .4, tag: 'VERIFIED', ms: '0.9 s', col: GREEN, rot: -.035,
+      f: (w, h) => { rr(30, 28, w - 60, 54, 27); ctx.fillStyle = '#0b1115'; ctx.fill(); T('🔍  ' + typed('voice automation greek', seg(lt, 1.0, 2.2)), 56, 56, { size: 26, color: '#cfe', font: UI, align: 'left', weight: 500 });
+        for (let i = 0; i < 4; i++) { ctx.fillStyle = 'rgba(255,255,255,.08)'; rr(30, 120 + i * 62, (w - 60) * (.9 - i * .15), 22, 8); ctx.fill(); } } },
+    { x: 960, y: 560, w: 560, h: 400, title: 'Spotify', st: 1.1, tag: 'VERIFIED', ms: '1.2 s', col: GREEN, rot: .02,
+      f: (w, h) => { for (let i = 0; i < 22; i++) { const v = .25 + .75 * Math.abs(Math.sin(lt * 6 + i * .9) * Math.cos(lt * 3.1 + i * .4)); ctx.fillStyle = '#1ed760'; rr(34 + i * 23, h - 40 - v * (h - 140), 15, v * (h - 140), 5); ctx.fill(); }
+        T('♪  Now playing', 30, 48, { size: 32, color: '#1ed760', font: UI, align: 'left' }); } },
+    { x: 1500, y: 520, w: 560, h: 400, title: 'Notepad', st: 1.8, tag: 'VERIFIED', ms: '0.7 s', col: GREEN, rot: .04,
+      f: (w, h) => { const ls = ['Meeting notes', 'Καλημέρα σε όλους', 'dictated with PESTO', 'opened with PASTA']; ls.forEach((l, i) => T(typed(l, seg(lt, 2.4 + i * .3, 2.8 + i * .3)), 32, 50 + i * 62, { size: 34, color: '#e8fff0', font: UI, align: 'left', weight: 500 })); } },
+  ];
+  for (const d of defs) {
+    const q = seg(lt, d.st, d.st + .6); if (q <= 0) continue;
+    const sc = lerp(.3, 1, outBack(q)), yy = lerp(d.y - 500, d.y, outExpo(q)), rot = lerp(d.rot * 8, d.rot, outBack(q));
+    win(d.x, yy, d.w, d.h, d.title, sc, rot, c01(q * 3), d.f);
+    const sq = outBack(seg(lt, d.st + .75, d.st + 1.15));
+    if (sq > 0) withTransform(d.x + 120, d.y + 220, sq, .06, () => { pill('✓ ' + d.tag + '  ' + d.ms, 0, 0, d.col, { size: 30 }); });
+  }
+  if (lt >= 3.4) {
+    const a = seg(lt, 3.4, 3.9);
+    ctx.globalAlpha = a;
+    pill('● VERIFIED', 560, 880, GREEN, { size: 32, h: 64 });
+    pill('● UNVERIFIED', 960, 880, AMBER, { size: 32, h: 64 });
+    pill('● FAILED', 1330, 880, RED, { size: 32, h: 64 });
+    T('Outcome checked against the live Windows desktop — never claimed blindly.', W / 2, 975, { size: 34, color: '#cfe', font: UI, weight: 600 });
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ============================================================
+   SCENE 8 — OFFLINE
+   ============================================================ */
+function cloud(cx, cy, s) {
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(s, s); ctx.beginPath();
+  ctx.arc(-70, 20, 60, Math.PI * .5, Math.PI * 1.5); ctx.arc(-10, -35, 70, Math.PI, Math.PI * 1.95);
+  ctx.arc(70, 10, 55, Math.PI * 1.5, Math.PI * .5); ctx.closePath(); ctx.restore();
+}
+function sceneOffline(lt) {
+  if (lt < 2.2) {
+    const q = outBack(seg(lt, 0, .5));
+    ctx.save(); ctx.globalAlpha = 1 - seg(lt, 1.9, 2.2);
+    cloud(W / 2, 430, 3.2 * q); ctx.lineWidth = 12; ctx.strokeStyle = '#6f8794'; ctx.stroke();
+    ctx.fillStyle = 'rgba(111,135,148,.12)'; ctx.fill();
+    const sl = outExpo(seg(lt, .6, 1.0));
+    ctx.strokeStyle = RED; ctx.lineWidth = 26; ctx.lineCap = 'round'; ctx.shadowColor = RED; ctx.shadowBlur = 40;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 230, 250); ctx.lineTo(lerp(W / 2 - 230, W / 2 + 230, sl), lerp(250, 610, sl)); ctx.stroke();
+    ctx.restore();
+    T('NO CLOUD.', W / 2, 770, { size: 150, color: '#fff', glitch: Math.max(0, 1 - lt * 2.5), alpha: seg(lt, .3, .6), shadow: RED });
+    ctx.globalAlpha = 1 - seg(lt, 1.9, 2.2);
+    T('NO UPLOAD.  NO ACCOUNT.  NO LEAKS.', W / 2, 910, { size: 44, color: '#cfe', font: UI, ls: 10, weight: 800, alpha: seg(lt, 1.0, 1.4) });
+    ctx.globalAlpha = 1;
+    return;
+  }
+  const t = lt - 2.2, q = outBack(seg(t, 0, .6));
+  // chip
+  const cx = W / 2, cy = 470;
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * 6.283, ph = (t * 1.3 + i * .17) % 1;
+    const ex = cx + Math.cos(a) * 560, ey = cy + Math.sin(a) * 340, sx = cx + Math.cos(a) * 190, sy = cy + Math.sin(a) * 190;
+    ctx.strokeStyle = hexA(CYAN, .35); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(lerp(sx, ex, q), lerp(sy, ey, q)); ctx.stroke();
+    ctx.fillStyle = CYAN; ctx.shadowColor = CYAN; ctx.shadowBlur = 16;
+    ctx.beginPath(); ctx.arc(lerp(sx, ex, ph * q), lerp(sy, ey, ph * q), 6, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+  }
+  withTransform(cx, cy, q, 0, () => {
+    card(-190, -190, 380, 380, { stroke: CYAN, glow: CYAN, fill: '#0b1418', r: 34, lw: 5 });
+    for (let i = 0; i < 6; i++) { ctx.fillStyle = hexA(CYAN, .2 + .15 * Math.sin(t * 3 + i)); ctx.fillRect(-150 + i * 52, -150, 28, 300); }
+    T('GPU', 0, -20, { size: 120, color: '#fff', shadow: CYAN });
+    T('RTX 3050 · 8 GB', 0, 70, { size: 34, color: CYAN, font: UI, weight: 800 });
+    T('CUDA 12', 0, 120, { size: 28, color: '#9ab', font: UI, weight: 600 });
+  });
+  T('100% ON-DEVICE', W / 2, 880, { size: 110, color: '#fff', shadow: CYAN, alpha: seg(t, .5, .9), glitch: Math.max(0, .7 - t * 1.5) });
+  T('models cached once · works with the network unplugged', W / 2, 975, { size: 34, color: '#cfe', font: UI, weight: 600, alpha: seg(t, 1.0, 1.4) });
+}
+
+/* ============================================================
+   SCENE 9 — NUMBERS (beat-synced cuts)
+   ============================================================ */
+const STATS = [
+  { v: '97.5%', l: 'GREEK COMMANDS MATCHED', s: 'first unseen run · held-out set', c: GREEN },
+  { v: '<0.1 ms', l: 'GRAMMAR PARSE TIME', s: 'vs 2–3 s for a local LLM', c: ORANGE },
+  { v: '0%', l: 'FALSE TRIGGERS', s: '30 adversarial dictation traps', c: CYAN },
+  { v: '450 ms', l: 'ENGINE LATENCY · P50', s: 'Whisper large-v3-turbo', c: GREEN },
+  { v: '124 ms', l: 'PARAKEET ENGLISH', s: 'CUDA · 5.96% WER', c: AMBER },
+  { v: '201', l: 'ANNOTATED UTTERANCES', s: 'EL + EN · commands, traps, out-of-scope', c: ORANGE },
+];
+function sceneNumbers(lt) {
+  const cut = BEAT * 2, idx = Math.min(STATS.length - 1, Math.floor(lt / cut)), st = STATS[idx], u = lt - idx * cut;
+  const flash = Math.exp(-u * 14);
+  ctx.fillStyle = hexA(st.c, .10 + flash * .55); ctx.fillRect(0, 0, W, H);
+  // speed lines
+  ctx.save(); ctx.strokeStyle = hexA(st.c, .35); ctx.lineWidth = 3;
+  const r = rng(idx * 77 + 3);
+  for (let i = 0; i < 26; i++) { const y = r() * H, len = 200 + r() * 600, x = ((r() * W * 2 + lt * 2500 * (.5 + r())) % (W + len)) - len; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + len, y); ctx.stroke(); }
+  ctx.restore();
+  const q = outBack(seg(u, 0, .22)), sc = lerp(3.2, 1, q);
+  withTransform(W / 2, 480, sc, (1 - q) * .08 * (idx % 2 ? 1 : -1), () => {
+    T(st.v, 0, 0, { size: 330, color: '#fff', shadow: st.c, glitch: Math.max(0, 1 - u * 5), alpha: Math.min(1, u * 14) });
+  });
+  T(st.l, W / 2, 740, { size: 64, color: st.c, font: UI, ls: 10, weight: 800, alpha: seg(u, .08, .25) });
+  T(st.s, W / 2, 820, { size: 36, color: '#cfe', font: UI, weight: 500, alpha: seg(u, .15, .35) });
+  // index ticks
+  STATS.forEach((_, i) => { ctx.fillStyle = i === idx ? st.c : 'rgba(255,255,255,.2)'; ctx.fillRect(W / 2 - 150 + i * 52, 930, 36, 8); });
+}
+
+/* ============================================================
+   SCENE 10 — FINALE
+   ============================================================ */
+function sceneFinale(lt) {
+  const grad = ctx.createLinearGradient(260, 0, 1660, 0); grad.addColorStop(0, GREEN); grad.addColorStop(1, ORANGE);
+  for (let k = 0; k < 4; k++) {
+    const ph = ((lt - k * .35) * .7) % 1; if (lt < k * .35) continue;
+    ctx.strokeStyle = hexA(k % 2 ? ORANGE : GREEN, (1 - ph) * .6); ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(W / 2, 430, 100 + ph * 1100, 0, 6.283); ctx.stroke();
+  }
+  const q = outBack(seg(lt, .0, .6));
+  withTransform(W / 2, 400, q, 0, () => { ctx.shadowColor = GREEN; ctx.shadowBlur = 22; T('PESTO + PASTA', 0, 0, { size: 210, color: grad, glitch: Math.max(0, .9 - lt * 1.6) + pulse(lt) * .1 }); });
+  T('HOLD.  SPEAK.  RELEASE.', W / 2, 590, { size: 64, color: '#fff', font: UI, ls: 14, weight: 800, alpha: seg(lt, .8, 1.3) });
+  if (lt > 1.6) {
+    const a = seg(lt, 1.6, 2.1);
+    ctx.globalAlpha = a;
+    pill('PESTO · dictation', 520, 720, GREEN, { size: 32, h: 66 });
+    pill('PASTA · commands', 960, 720, ORANGE, { size: 32, h: 66 });
+    pill('Greek + English', 1380, 720, CYAN, { size: 32, h: 66 });
+    ctx.globalAlpha = 1;
+  }
+  T('Windows 10/11  ·  CUDA 12  ·  100% offline  ·  MIT', W / 2, 840, { size: 36, color: '#cfe', font: UI, weight: 600, ls: 3, alpha: seg(lt, 2.2, 2.7) });
+  T('github.com/giannismargetis/pasta', W / 2, 920, { size: 40, color: ORANGE, font: MONO, weight: 700, alpha: seg(lt, 2.8, 3.3) });
+  T('ΚΡΑΤΑ  ·  ΜΙΛΑ  ·  ΑΦΗΣΕ', W / 2, 990, { size: 30, color: GREEN, font: UI, ls: 16, weight: 700, alpha: seg(lt, 3.2, 3.8) });
+  const f = seg(lt, 5.2, 6.0);
+  if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+}
+
+const FN = [sceneIntro, scenePesto, sceneBilingual, sceneSpeed, scenePasta, sceneSafety, sceneVerified, sceneOffline, sceneNumbers, sceneFinale];
+
+/* ============================================================
+   POST / HUD / TRANSITIONS
+   ============================================================ */
+const scan = (() => { const o = document.createElement('canvas'); o.width = 4; o.height = 4; const g = o.getContext('2d'); g.fillStyle = 'rgba(0,0,0,.16)'; g.fillRect(0, 0, 4, 2); return o; })();
+function transitions(t) {
+  for (let i = 1; i < SCENES.length; i++) {
+    const b = SCENES[i].s, d = t - b;
+    if (Math.abs(d) < .28) {
+      const k = 1 - Math.abs(d) / .28, r = rng(Math.floor(t * 30) + i);
+      const snap = document.createElement('canvas'); snap.width = W; snap.height = H; snap.getContext('2d').drawImage(cv, 0, 0);
+      for (let n = 0; n < 12; n++) {
+        const y = r() * H, h = 20 + r() * 120, dx = (r() - .5) * 360 * k;
+        ctx.drawImage(snap, 0, y, W, h, dx, y, W, h);
+      }
+      ctx.fillStyle = hexA(i % 2 ? GREEN : ORANGE, k * .35); ctx.fillRect(0, 0, W, H);
+      if (d > -.04 && d < .06) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(0, 0, W, H); }
+    }
+  }
+}
+function hud(t, sc) {
+  ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(0, H - 8, W, 8);
+  const g = ctx.createLinearGradient(0, 0, W, 0); g.addColorStop(0, GREEN); g.addColorStop(1, ORANGE);
+  ctx.fillStyle = g; ctx.fillRect(0, H - 8, W * t / DUR, 8);
+  if (sc !== SCENES[9] && sc !== SCENES[0]) {
+    T(sc.name, 60, 56, { size: 24, color: sc.col, font: MONO, align: 'left', weight: 700, ls: 4 });
+    T('PESTO + PASTA', W - 60, 56, { size: 24, color: '#789', font: UI, align: 'right', weight: 800, ls: 6 });
+  }
+  const s = Math.floor(t);
+  T(`00:${String(s).padStart(2, '0')}`, W - 60, H - 40, { size: 22, color: '#789', font: MONO, align: 'right', weight: 600 });
+}
+function render(t) {
+  t = Math.max(0, Math.min(DUR - .001, t));
+  const sc = sceneAt(t), i = SCENES.indexOf(sc);
+  ctx.save();
+  // beat camera punch
+  const p = pulse(t) * (i === 8 ? .02 : .008);
+  ctx.translate(W / 2, H / 2); ctx.scale(1 + p, 1 + p); ctx.translate(-W / 2, -H / 2);
+  bg(t, sc);
+  ctx.save(); FN[i](t - sc.s); ctx.restore();
+  ctx.restore();
+  // vignette + scanlines
+  const v = ctx.createRadialGradient(W / 2, H / 2, 500, W / 2, H / 2, 1200); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.65)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = ctx.createPattern(scan, 'repeat'); ctx.fillRect(0, 0, W, H);
+  hud(t, sc);
+  transitions(t);
+}
+window.render = render;
+
+/* ============================================================
+   AUDIO — procedural 128 BPM score (A minor)
+   ============================================================ */
+let AC = null, master = null, recDest = null, muted = false;
+function noiseBuf(ctx_) { const b = ctx_.createBuffer(1, ctx_.sampleRate * 2, ctx_.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function buildAudio(offset) {
+  const a = AC, t0 = a.currentTime + .08, nb = noiseBuf(a);
+  const at = tt => t0 + tt - offset;
+  const ok = tt => tt >= offset - .001;
+  const env = (g, t, dur, peak) => { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + .004); g.gain.exponentialRampToValueAtTime(.0008, t + dur); };
+  const kick = (tt, v = 1) => { if (!ok(tt)) return; const t = at(tt), o = a.createOscillator(), g = a.createGain(); o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(42, t + .14); env(g, t, .34, .95 * v); o.connect(g).connect(master); o.start(t); o.stop(t + .4); };
+  const noise = (tt, dur, type, f, peak, q = 1) => { if (!ok(tt)) return; const t = at(tt), s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(); s.buffer = nb; fl.type = type; fl.frequency.value = f; fl.Q.value = q; env(g, t, dur, peak); s.connect(fl).connect(g).connect(master); s.start(t, Math.random()); s.stop(t + dur + .05); };
+  const tone = (tt, dur, midi, type, peak, cut) => { if (!ok(tt)) return; const t = at(tt), o = a.createOscillator(), fl = a.createBiquadFilter(), g = a.createGain(); o.type = type; o.frequency.value = mtof(midi); fl.type = 'lowpass'; fl.frequency.setValueAtTime(cut, t); fl.frequency.exponentialRampToValueAtTime(Math.max(120, cut * .25), t + dur); env(g, t, dur, peak); o.connect(fl).connect(g).connect(master); o.start(t); o.stop(t + dur + .05); };
+  const riser = (from, to) => { if (!ok(from)) return; const t = at(from), d = to - from, s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(); s.buffer = nb; s.loop = true; fl.type = 'bandpass'; fl.Q.value = 3; fl.frequency.setValueAtTime(250, t); fl.frequency.exponentialRampToValueAtTime(9000, t + d); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.38, t + d); g.gain.linearRampToValueAtTime(0, t + d + .04); s.connect(fl).connect(g).connect(master); s.start(t); s.stop(t + d + .1); };
+  const impact = tt => { kick(tt, 1.2); noise(tt, .7, 'lowpass', 2500, .5); tone(tt, 1.1, 33, 'sine', .7, 400); };
+  master.gain.cancelScheduledValues(a.currentTime); master.gain.setValueAtTime(muted ? 0 : .8, a.currentTime);
+  const fadeAt = at(DUR - 1.2); if (fadeAt > a.currentTime) { master.gain.setValueAtTime(muted ? 0 : .8, fadeAt); master.gain.linearRampToValueAtTime(0, at(DUR)); }
+
+  const bass = [33, 33, 29, 31];     // A1 A1 F1 G1 per bar
+  const arpN = [[57, 60, 64, 69], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]];
+  for (let n = 0; n * BEAT < DUR; n++) {
+    const tt = n * BEAT, bar = Math.floor(n / 4) % 4, step = n % 4;
+    // intro heartbeat
+    if (tt < 4) { if (step === 0 || step === 2) kick(tt, .45); continue; }
+    if (tt >= 54) {                        // finale: soft pulse + pad
+      if (tt < 58.5) kick(tt, .5);
+      continue;
+    }
+    kick(tt, 1);
+    noise(tt + BEAT / 2, .06, 'highpass', 8000, .16);
+    if (tt >= 10 && (step === 1 || step === 3)) { noise(tt, .18, 'bandpass', 1600, .45, .7); }
+    if (tt >= 10) tone(tt + BEAT / 2, BEAT * .45, bass[bar] + 12 * (step === 3 ? 1 : 0), 'sawtooth', .22, 900);
+    for (let k = 0; k < 4 && tt >= 16; k++) tone(tt + k * BEAT / 4, BEAT / 4 * .9, arpN[bar][(k + step) % 4] + (tt >= 48 ? 12 : 0), 'square', .06, 3200);
+    if (tt >= 48) { noise(tt + BEAT / 4, .04, 'highpass', 9000, .12); noise(tt + BEAT * .75, .04, 'highpass', 9000, .12); }
+  }
+  // stems
+  [[4, 'imp'], [10, 'imp'], [16, 'imp'], [23, 'imp'], [31, 'imp'], [37, 'imp'], [43, 'imp'], [48, 'imp'], [54, 'big']].forEach(([b, k]) => { impact(b); if (k === 'big') { noise(b, 2.2, 'lowpass', 5000, .5); } });
+  riser(1.2, 4); [8, 14, 21, 29, 35, 41, 46, 52].forEach(b => riser(b - 1.6, b));
+  // finale pad Am chord
+  [57, 60, 64, 69].forEach(m => { tone(54.05, 5.5, m, 'sawtooth', .09, 2400); tone(54.05, 5.5, m - 12, 'sine', .08, 1200); });
+  // stat blips (scene 9)
+  for (let i = 0; i < 6; i++) { tone(48 + i * BEAT * 2, .3, 81 + i, 'square', .1, 5000); }
+  // UI blips
+  tone(7.0, .25, 93, 'sine', .15, 6000); tone(11.0, .2, 88, 'sine', .12, 6000); tone(25.0, .3, 88, 'sine', .12, 6000);
+  [25.6, 26.4, 27.2, 28.1, 28.9, 29.7].forEach((tt, i) => tone(tt, .22, 76 + i * 2, 'triangle', .22, 6000));
+  tone(30.4, .6, 84, 'sine', .25, 8000); tone(30.4, .6, 91, 'sine', .15, 8000);
+}
+
+/* ============================================================
+   PLAYBACK ENGINE
+   ============================================================ */
+const gate = document.getElementById('gate'), hint = document.getElementById('hint');
+let tNow = 0, playing = false, lastTs = null, recorder = null;
+function ensureAudio() {
+  if (!AC) {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    master = AC.createGain(); master.connect(AC.destination);
+    recDest = AC.createMediaStreamDestination(); master.connect(recDest);
+  }
+  return AC.resume();
+}
+function startAudioAt(off) { if (AC) { AC.close(); AC = null; } ensureAudio().then(() => { buildAudio(off); }); }
+function play(from = 0) { tNow = from; playing = true; lastTs = null; if (!window.__noaudio) startAudioAt(from); }
+function togglePause() { playing = !playing; lastTs = null; if (AC) playing ? AC.resume() : AC.suspend(); }
+function seek(dt) { tNow = Math.max(0, Math.min(DUR - .01, tNow + dt)); if (!window.__noaudio && playing) startAudioAt(tNow); }
+function frame(ts) {
+  if (playing) {
+    if (lastTs !== null) tNow += (ts - lastTs) / 1000;
+    lastTs = ts;
+    if (tNow >= DUR) { tNow = DUR - .001; playing = false; if (recorder) stopRec(); }
+  }
+  render(tNow);
+  requestAnimationFrame(frame);
+}
+function begin() { gate.classList.add('off'); hint.classList.add('on'); setTimeout(() => hint.classList.remove('on'), 6000); play(0); }
+gate.addEventListener('click', begin);
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); if (!gate.classList.contains('off')) begin(); else togglePause(); }
+  else if (e.code === 'ArrowRight') seek(2); else if (e.code === 'ArrowLeft') seek(-2);
+  else if (e.key === 'r' || e.key === 'R') play(0);
+  else if (e.key === 'm' || e.key === 'M') { muted = !muted; if (master) master.gain.value = muted ? 0 : .8; }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === 'e' || e.key === 'E') startRec();
+});
+/* export: records canvas + synthesized audio to WebM in real time */
+function startRec() {
+  gate.classList.add('off'); playing = false; window.__noaudio = false;
+  if (AC) { AC.close(); AC = null; }
+  ensureAudio().then(() => {
+    const vs = cv.captureStream(60), as = recDest.stream;
+    recorder = new MediaRecorder(new MediaStream([...vs.getVideoTracks(), ...as.getAudioTracks()]), { mimeType: 'video/webm;codecs=vp9,opus', videoBitsPerSecond: 16e6 });
+    const chunks = []; recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
+    recorder.onstop = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })); a.download = 'PESTO_PASTA_showcase.webm'; a.click(); recorder = null; };
+    recorder.start(); buildAudio(0); tNow = 0; playing = true; lastTs = null;
+  });
+}
+function stopRec() { try { recorder.stop(); } catch (e) { } }
+
+/* test hooks: ?t=12.5 paused frame, ?silent autoplay with no sound */
+const qs = new URLSearchParams(location.search);
+window.seekTo = s => { tNow = s; };
+if (qs.has('t')) { gate.classList.add('off'); window.__noaudio = true; tNow = parseFloat(qs.get('t')); playing = false; }
+else if (qs.has('silent')) { gate.classList.add('off'); window.__noaudio = true; playing = true; }
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
